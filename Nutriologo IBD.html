@@ -1,0 +1,3329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NutriPlan & Mandado Semanal · Herramienta para Nutriólogos, Médicos y Pacientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-display: "Bricolage Grotesque", -apple-system, system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", -apple-system, system-ui, sans-serif;
+
+  /* Clinical / Botanical Fresh Palette */
+  --bg: #f6f8f5;
+  --surface: #ffffff;
+  --surface-2: #edf2eb;
+  --surface-3: #e1e9de;
+  --line: #d8e2d4;
+  --line-subtle: #eaf0e7;
+
+  --fg: #13241b;
+  --fg-muted: #536b5d;
+  --fg-faint: #7a9484;
+
+  --primary: #1e593e;
+  --primary-hover: #164630;
+  --primary-light: #e6f3eb;
+  --primary-border: #9ec9b0;
+
+  --accent: #0284c7;
+  --accent-light: #e0f2fe;
+
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --success: #15803d;
+  --success-light: #dcfce7;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 14px -2px rgba(19, 36, 27, 0.08);
+  --shadow-lg: 0 12px 28px -4px rgba(19, 36, 27, 0.12);
+
+  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1510;
+    --surface: #141f18;
+    --surface-2: #1b2920;
+    --surface-3: #24352b;
+    --line: #2b3e33;
+    --line-subtle: #1e2d24;
+
+    --fg: #eaf2ec;
+    --fg-muted: #95ab9c;
+    --fg-faint: #6c8072;
+
+    --primary: #4ade80;
+    --primary-hover: #6ee7a0;
+    --primary-light: #163321;
+    --primary-border: #245738;
+
+    --accent: #38bdf8;
+    --accent-light: #082f49;
+
+    --amber: #fbbf24;
+    --amber-light: #382405;
+    --danger: #f87171;
+    --danger-light: #3b1111;
+    --success: #4ade80;
+    --success-light: #163321;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 14px -2px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 28px -4px rgba(0,0,0,0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0d1510;
+  --surface: #141f18;
+  --surface-2: #1b2920;
+  --surface-3: #24352b;
+  --line: #2b3e33;
+  --line-subtle: #1e2d24;
+
+  --fg: #eaf2ec;
+  --fg-muted: #95ab9c;
+  --fg-faint: #6c8072;
+
+  --primary: #4ade80;
+  --primary-hover: #6ee7a0;
+  --primary-light: #163321;
+  --primary-border: #245738;
+
+  --accent: #38bdf8;
+  --accent-light: #082f49;
+
+  --amber: #fbbf24;
+  --amber-light: #382405;
+  --danger: #f87171;
+  --danger-light: #3b1111;
+  --success: #4ade80;
+  --success-light: #163321;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; font-family: var(--font-body); background: var(--bg); color: var(--fg); -webkit-font-smoothing: antialiased; }
+
+body {
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: 80px;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; border: none; background: none; transition: var(--transition); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Container */
+.container { max-width: 1140px; margin: 0 auto; padding-top: 16px; }
+
+/* Header & Mode Switcher */
+header.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary) 0%, #0d9488 100%);
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(30, 89, 62, 0.25);
+}
+.brand-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.brand-subtitle {
+  font-size: 12.5px;
+  color: var(--fg-muted);
+  font-weight: 500;
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Mode Switcher Pill */
+.mode-toggle {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+}
+.mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg-muted);
+}
+.mode-btn.active {
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+}
+.mode-btn.clinician.active {
+  color: var(--primary);
+}
+
+.theme-toggle, .btn-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--fg-muted);
+}
+.theme-toggle:hover, .btn-icon:hover {
+  background: var(--surface-3);
+  color: var(--fg);
+}
+
+/* Patient / Clinic Banner */
+.patient-badge-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--fg);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.patient-badge-banner .info-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.pill-badge {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}
+.pill-badge.alert-pill {
+  background: var(--amber-light);
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+.tab-btn:hover {
+  color: var(--fg);
+  background: var(--surface-2);
+}
+.tab-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(30, 89, 62, 0.25);
+}
+.tab-badge {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+.tab-btn:not(.active) .tab-badge {
+  background: var(--surface-3);
+  color: var(--fg-muted);
+}
+
+/* KPI Summary Bar */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.kpi-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kpi-val {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1.15;
+  color: var(--fg);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.kpi-val.highlight { color: var(--primary); }
+.kpi-val.warning { color: var(--amber); }
+.kpi-val.danger { color: var(--danger); }
+.kpi-sub {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 4px;
+}
+.progress-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+.progress-bar-fill.over { background: var(--danger); }
+
+/* Quick Action Buttons */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13.5px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+}
+.btn:hover { background: var(--surface-2); border-color: var(--fg-muted); }
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #fff;
+}
+.btn-whatsapp {
+  background: #25D366;
+  color: #ffffff;
+  border-color: #20ba5a;
+}
+.btn-whatsapp:hover {
+  background: #1eb956;
+  color: #fff;
+}
+.btn-accent {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+.btn-accent:hover { background: #0369a1; color: #fff; }
+.btn-sm { padding: 6px 12px; font-size: 12.5px; }
+
+/* Weekly Calendar Grid */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 16px;
+}
+.day-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.day-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid var(--line);
+  margin-bottom: 10px;
+}
+.day-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.day-macros {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.meal-slot-item {
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--line);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+.meal-slot-item:last-child { border-bottom: none; }
+.meal-type-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-muted);
+}
+.meal-title-btn {
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+.meal-title-btn:hover { color: var(--primary); text-decoration: underline; }
+.meal-meta-pills {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.meta-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--fg-muted);
+}
+.meta-pill.p-cost { font-weight: 700; color: var(--success); }
+.meal-actions-group {
+  display: flex;
+  gap: 4px;
+}
+.btn-swap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--fg-muted);
+}
+.btn-swap:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+
+/* Shopping List View */
+.shopping-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+.aisle-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+}
+.aisle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--line);
+  margin-bottom: 12px;
+}
+.aisle-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.aisle-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+}
+.aisle-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+}
+.aisle-subtotal {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--fg);
+}
+.grocery-item-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.grocery-item-row:hover { background: var(--surface-2); }
+.grocery-item-row.checked { opacity: 0.5; }
+.grocery-item-row.checked .g-name { text-decoration: line-through; }
+.grocery-item-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.g-name { font-size: 14.5px; font-weight: 700; color: var(--fg); }
+.g-qty { font-size: 12px; color: var(--fg-muted); }
+.g-cost { font-weight: 800; font-size: 14.5px; color: var(--fg); font-variant-numeric: tabular-nums; }
+
+/* Clinical / Doctor View */
+.clinical-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 860px) {
+  .clinical-grid { grid-template-columns: 1fr; }
+}
+.card-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panel-title svg { color: var(--primary); }
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+}
+.form-control {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+.form-control:focus {
+  background: var(--surface);
+  border-color: var(--primary);
+}
+
+.imc-calculator-box {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.imc-badge {
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+}
+
+/* Plateau del bien comer visual */
+.bien-comer-box {
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 14px;
+}
+.bien-comer-bars {
+  display: flex;
+  height: 16px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.bc-ver { background: #22c55e; flex: 50; }
+.bc-pro { background: #ef4444; flex: 25; }
+.bc-cer { background: #eab308; flex: 25; }
+.bc-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bc-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.leg-ver::before { background: #22c55e; }
+.leg-pro::before { background: #ef4444; }
+.leg-cer::before { background: #eab308; }
+
+/* Clinical Presets Checklist */
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 13.5px;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item input {
+  margin-top: 3px;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--primary);
+}
+
+/* Recipes Catalog View */
+.catalog-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.search-input-wrap {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+.search-input-wrap input {
+  width: 100%;
+  padding-left: 36px;
+}
+.search-icon-pos {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fg-muted);
+  pointer-events: none;
+}
+.recipe-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.recipe-card-single {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+}
+.recipe-card-single:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-border);
+}
+.recipe-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+.recipe-card-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.recipe-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  color: var(--fg-muted);
+}
+.tag-badge.clin-dm2 { background: #e0f2fe; color: #0369a1; }
+.tag-badge.clin-hta { background: #fef3c7; color: #92400e; }
+.tag-badge.clin-deficit { background: #dcfce7; color: #166534; }
+.tag-badge.clin-hiper { background: #f3e8ff; color: #6b21a8; }
+
+.recipe-quick-macros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  background: var(--surface-2);
+  padding: 8px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-size: 11.5px;
+  margin-bottom: 12px;
+}
+.recipe-quick-macros b { display: block; font-size: 13px; color: var(--fg); }
+
+/* Budget Savings Tips Panel */
+.saving-tip-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.saving-tip-title {
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 4px;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 14, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  max-width: 620px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+}
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+}
+
+/* Toast */
+.toast-msg {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--fg);
+  color: var(--surface);
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Print Stylesheet for Professional Prescription / Meal Plan */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    font-size: 11pt !important;
+  }
+  .app-header .header-tools,
+  .nav-tabs,
+  .action-bar,
+  .btn-swap,
+  .mode-toggle,
+  .theme-toggle,
+  .modal-overlay,
+  .toast-msg {
+    display: none !important;
+  }
+  .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  .card-panel, .day-card, .aisle-card {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    margin-bottom: 12pt !important;
+  }
+  .print-only-header {
+    display: block !important;
+    border-bottom: 2px solid #1e593e;
+    padding-bottom: 10pt;
+    margin-bottom: 15pt;
+  }
+}
+.print-only-header { display: none; }
+/* Diseño editorial botánico · NutriPlan */
+:root{--bg:#f5f4ef;--surface:#fffefa;--surface-2:#eff1e9;--surface-3:#e4e9db;--line:#e0e3d8;--fg:#24372b;--fg-muted:#657264;--primary:#285b3d;--primary-hover:#1b422b;--primary-light:#e7eedf;--radius-lg:22px;--shadow-sm:0 3px 16px #263c2705;--font-display:'Bricolage Grotesque',Georgia,serif}
+body{padding:0 28px 48px} .container{max-width:1400px;padding-top:24px}header.app-header{background:transparent;border:0;box-shadow:none;padding:0 0 20px;border-radius:0;margin-bottom:0}.brand-icon{background:#285b3d;color:white;width:46px;height:46px;box-shadow:none;border-radius:15px}.brand-title{font-size:30px;letter-spacing:-1.6px}.brand-subtitle{font-size:11px;letter-spacing:.03em}.mode-toggle{background:var(--surface);border-radius:100px;padding:4px;border:1px solid var(--line)}.mode-btn{border-radius:100px;padding:10px 16px;font-size:12px}.mode-btn.active,.mode-btn.clinician.active{background:var(--primary);color:var(--surface);box-shadow:none}.btn-icon{background:var(--surface);border:1px solid var(--line)}.patient-badge-banner{background:var(--surface);border:1px solid var(--line)}.np-workspace-bar{display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid var(--line);padding:16px 0;font-size:10px;letter-spacing:.14em;font-weight:800}.np-status{letter-spacing:0;font-size:11px;color:#86642c;background:#f3ead8;padding:6px 12px;border-radius:30px;font-weight:600}.np-status.is-reviewed{background:var(--primary-light);color:var(--primary)}.nav-tabs{background:var(--surface);padding:7px;border:1px solid var(--line);border-radius:16px;gap:4px;margin-bottom:22px;overflow:auto;white-space:nowrap;scrollbar-width:thin}.tab-btn{border:0;border-radius:10px;font-size:12px;padding:12px 16px;flex:1;justify-content:center}.tab-btn.active{background:var(--primary-light);color:var(--primary);border:0}.tab-btn svg{width:15px}.kpi-grid{gap:14px;margin-bottom:20px}.kpi-card{box-shadow:none;border-radius:17px;padding:18px 20px;background:var(--surface);min-width:0}.kpi-label{font-size:11px;text-transform:none;letter-spacing:0;font-weight:600}.kpi-val{font-size:30px;letter-spacing:-1px;margin:8px 0}.kpi-sub{font-size:11px}.action-bar{margin:16px 0 24px;background:none;padding:0;border:0;box-shadow:none}.btn{border-radius:10px;padding:10px 15px;font-size:12px;box-shadow:none;min-height:40px}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-hover)}.btn-group{flex-wrap:wrap}.np-full{width:100%;justify-content:center}.np-muted{color:var(--fg-muted);font-size:12px;line-height:1.7;margin:8px 0 16px}.np-eyebrow{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--fg-muted);margin-bottom:8px;display:block}.np-hero{border-radius:26px;background:#e7ecda;min-height:290px;display:grid;grid-template-columns:1.3fr 1fr;align-items:center;padding:38px 46px;margin-bottom:24px;overflow:hidden;position:relative;color:#233c29}.np-hero h1{font-family:var(--font-display);font-size:clamp(30px,3.7vw,53px);font-weight:700;line-height:1.06;letter-spacing:-1.8px;margin:12px 0 16px}.np-hero p{font-size:13px;color:#53634d;line-height:1.7}.np-hero .np-eyebrow{color:#4f6549}.np-hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}.np-hero-pills span{border:1px solid #b5c1a5;border-radius:40px;padding:6px 10px;font-size:10px}.np-plate{justify-self:center;width:245px;height:245px;border-radius:50%;border:16px solid #fafaf2;background:#f2f3e7;box-shadow:0 16px 30px #29472e1a,0 0 0 1px #d5decb;position:relative;transform:rotate(-8deg)}.np-plate-food{display:grid;grid-template-columns:1fr 1fr;place-items:center;padding:14px;height:100%;gap:4px}.np-plate-food span{font-size:65px;filter:drop-shadow(1px 4px 3px #39523118)}.np-plate-label{position:absolute;bottom:-15px;left:5%;width:105%;background:#fffefa;border:1px solid #d1dac8;padding:12px;text-align:center;font-size:11px;border-radius:12px;transform:rotate(8deg);letter-spacing:.04em;color:#285b3d}.np-section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px}.np-heading{font-family:var(--font-display);font-size:23px;letter-spacing:-.5px}.panel-title{font-size:21px;letter-spacing:-.5px;font-weight:700}.card-panel{padding:25px;border-radius:20px;background:var(--surface);box-shadow:none;margin-bottom:20px}.np-today-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}.np-today-grid article{padding:10px 18px;border-left:1px solid var(--line)}.np-today-grid article:first-child{border-left:0;padding-left:0}.np-today-grid .meal-title-btn{font-size:15px;line-height:1.45;margin:6px 0}.np-today-grid .btn{font-size:10px;min-height:32px;padding:6px 10px}.np-today-grid .np-muted{font-size:10px}.week-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.day-card{box-shadow:none;border-radius:18px;overflow:hidden}.day-header{padding:15px 18px;background:var(--surface-2)}.day-name{font-size:16px}.day-macros{font-size:10px}.meal-slot-item{padding:15px 18px}.meal-title-btn{font-weight:600;font-size:13px;line-height:1.5}.meal-type-label{font-size:9px;letter-spacing:.1em}.meal-meta-pills{gap:4px}.meta-pill{font-size:9px;background:transparent;padding:0 5px 0 0}.meta-pill.p-cost{background:transparent;color:var(--primary)}.btn-swap{width:27px;height:27px;border:1px solid var(--line);border-radius:8px}.np-note{margin-top:20px;border-left:3px solid var(--primary);background:var(--primary-light);padding:20px 24px;border-radius:0 16px 16px 0;font-size:13px;line-height:1.8;white-space:normal}.np-note p{margin-top:6px}.np-note ul{padding-left:20px;margin-top:10px}.np-field{display:flex;flex-direction:column;gap:7px;margin-bottom:17px;font-size:12px;font-weight:600;min-width:0}.np-field span{line-height:1.5}.form-control{background:var(--surface);font-size:13px;padding:11px 12px;border-color:var(--line);border-radius:9px;min-width:0}.form-grid-2{gap:0 18px}.np-filters{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:12px}.recipe-cards-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:19px;margin-top:24px}.recipe-card-single{border-radius:18px;box-shadow:none}.recipe-card-body{padding:20px;gap:12px;display:flex;flex-direction:column}.recipe-card-title{font-size:17px;line-height:1.35;font-weight:650;min-height:46px}.np-recipe-art{height:125px;background:#edf0e4;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative}.recipe-card-single:nth-child(3n+2) .np-recipe-art{background:#f0e6d6}.recipe-card-single:nth-child(3n) .np-recipe-art{background:#e4ece7}.np-recipe-art span{position:absolute;right:12px;bottom:12px;font-size:10px;background:#fffdf5;padding:5px 10px;border-radius:20px;color:#354b39}.np-price{font-size:19px;color:var(--primary)}.np-price small{font-size:10px;color:var(--fg-muted);font-weight:500}.np-modal-cost{background:var(--primary-light);padding:14px;margin-bottom:18px;border-radius:12px;font-size:13px;font-weight:700}.np-modal-cost small{display:block;font-size:10px;font-weight:400;margin-top:5px}.np-spend-row,.np-stat{display:flex;justify-content:space-between;gap:16px;font-size:12px;margin:16px 0 8px;line-height:1.6}.np-stat{border-bottom:1px solid var(--line);padding-bottom:18px;align-items:center}.np-stat b{font-size:25px;color:var(--primary)}.np-budget-amount{font-family:var(--font-display);font-size:55px;letter-spacing:-2px;line-height:1.2;margin:15px 0}.np-budget-amount small{font-size:12px;letter-spacing:0;font-family:var(--font-body)}.np-guide{padding-left:18px;font-size:13px;color:var(--fg-muted);line-height:2.1}.np-saving{background:var(--primary-light);color:var(--primary);font-size:12px;padding:10px 14px;border-radius:12px}details summary{cursor:pointer;font-size:13px;font-weight:700;padding:12px 0}details[open]>summary{margin-bottom:12px}.np-table-wrap{max-height:400px;overflow:auto;margin-bottom:20px}.np-table{border-collapse:collapse;width:100%;font-size:12px}.np-table th{text-align:left;background:var(--surface-2);padding:12px;position:sticky;top:0;z-index:1}.np-table td{border-bottom:1px solid var(--line);padding:9px 12px;vertical-align:middle}.np-table td small{display:block;font-size:10px;color:var(--fg-muted);margin-top:5px}.np-table input{width:115px}.np-inline{display:flex;align-items:center;gap:8px;font-size:12px}.np-ingredient-editor{max-height:240px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;margin-bottom:20px;padding:8px 12px}.np-ingredient{display:grid;grid-template-columns:1fr 90px;align-items:center;gap:12px;padding:6px 0;font-size:12px}.np-ingredient small{color:var(--fg-muted)}.np-warning{background:var(--amber-light);color:var(--fg);padding:14px 18px;font-size:13px;border-radius:12px;margin-bottom:20px}.modal-box{max-width:720px;padding:27px}.modal-title{font-size:24px}.danger{color:var(--danger)}#np-print-content{display:none}.np-data-panel{max-width:760px;margin:0 auto 20px}footer{font-size:10px!important;max-width:900px;margin:36px auto 0!important;line-height:1.8}
+@media(min-width:1200px){.np-today-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.np-today-grid:has(article:nth-child(4):last-child){grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1100px){.week-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.np-today-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.np-today-grid article{border:0;padding:16px!important}.np-filters{grid-template-columns:1fr 1fr}.tab-btn{padding:11px 13px}.np-hero{padding:32px}.np-plate{width:220px;height:220px}.np-plate-food span{font-size:56px}}
+@media(max-width:760px){body{padding:0 14px 28px}.container{padding-top:18px}.brand-row{gap:18px}.brand-title{font-size:28px}.header-tools{width:100%;justify-content:space-between}.mode-toggle{flex:1}.mode-btn{padding:9px 10px;font-size:10px}.mode-btn svg{display:none}.np-workspace-bar{font-size:8px;letter-spacing:.06em}.np-status{font-size:9px}.kpi-grid{grid-template-columns:1fr 1fr;gap:10px}.kpi-card{padding:15px}.kpi-val{font-size:25px}.kpi-sub{font-size:9px}.action-bar{gap:12px;align-items:flex-start}.action-bar .btn{font-size:10px;padding:8px 10px}.action-bar>div:last-child{display:none}.np-hero{grid-template-columns:1fr;min-height:auto;padding:28px}.np-hero h1{font-size:37px}.np-plate{display:none}.np-hero p br{display:none}.np-today-grid{grid-template-columns:1fr 1fr}.np-today-grid article{padding:10px!important}.week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.recipe-cards-grid{grid-template-columns:1fr 1fr;gap:12px}.recipe-card-title{font-size:14px;min-height:58px}.recipe-card-body{padding:14px}.recipe-cards-grid .btn{font-size:10px;padding:8px}.recipe-tags .tag-badge{font-size:8px}.np-recipe-art{height:100px;font-size:52px}.np-price{font-size:17px}.card-panel{padding:19px}.clinical-grid{grid-template-columns:1fr}.np-table td,.np-table th{padding:8px}.np-table input{width:80px}.np-table td:first-child{min-width:160px}.form-grid-2{gap:0 10px}.np-budget-amount{font-size:45px}.np-heading{font-size:21px}.np-section-head .np-muted{margin:0}.panel-title{font-size:20px}.modal-box{padding:20px;max-height:90vh}.np-note{padding:16px 18px}.nav-tabs{margin-bottom:16px}.tab-btn{flex:none;font-size:11px}.tab-btn svg{display:none}}
+@media(max-width:440px){.week-grid{grid-template-columns:1fr}.np-today-grid{grid-template-columns:1fr}.np-today-grid article+article{border-top:1px solid var(--line)}.np-filters{grid-template-columns:1fr}.form-grid-2{grid-template-columns:1fr}.recipe-card-body .np-section-head{gap:5px}.np-price small{display:block}.np-workspace-bar{align-items:flex-start}.np-status{text-align:center;max-width:155px}}
+:root[data-theme="dark"] .np-hero{background:#293c2a;color:#e6efdf}:root[data-theme="dark"] .np-hero p,:root[data-theme="dark"] .np-hero .np-eyebrow{color:#b1c5a9}:root[data-theme="dark"] .np-recipe-art{background:#293b2d}:root[data-theme="dark"] .np-status{background:#463820;color:#f5d99d}:root[data-theme="dark"] .btn-primary{color:#13241b}
+@media print{body>*{display:none!important}body>#np-print-content{display:block!important;padding:20px;color:#111;background:#fff;font:10pt/1.5 Arial,sans-serif}#np-print-content .week-grid{display:grid!important;grid-template-columns:1fr 1fr!important}#np-print-content .day-card{break-inside:avoid}#np-print-content .btn-swap,#np-print-content .meal-actions-group{display:none!important}#np-print-content h1{font-size:20pt}#np-print-content h2{font-size:14pt;margin:18pt 0 8pt}#np-print-content .np-note{background:#f3f5ef!important;color:#111}#np-print-content .meal-title-btn{font-size:10pt;color:#111}#np-print-content .day-header{background:#eee!important;color:#111}#np-print-content .meal-meta-pills{color:#333}}
+
+.btn-swap{min-width:34px;min-height:34px}.meal-type-label{font-size:10px}.meta-pill{font-size:10px}.day-macros{font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="container" id="app">
+  <!-- Content dynamically mounted by JavaScript -->
+</div>
+
+<!-- Modal Container -->
+<div id="modal-root"></div>
+<!-- Toast Container -->
+<div id="toast-root"></div>
+
+<script>
+/* ==========================================================================
+   1. CATÁLOGO MAESTRO DE INGREDIENTES (PRECIOS SÚPER MÉXICO OCTUBRE 2026)
+   [nombre, pasillo, unidad, cant_paquete, precio_paquete, banderas, paso_granel]
+   banderas: m (carne), f (pescado), d (lácteo), e (huevo), h (miel), c (carbohidrato complejo)
+   ========================================================================== */
+const I = {
+  // Carnes, aves y pescados
+  pollo: ['Pechuga de pollo magra', 'car', 'g', 1000, 155, 'm', 250],
+  molida: ['Carne molida de res magra (90/10)', 'car', 'g', 1000, 175, 'm', 250],
+  bistec: ['Bistec de res magro para asar', 'car', 'g', 1000, 215, 'm', 250],
+  cerdo: ['Lomo de cerdo magro', 'car', 'g', 1000, 145, 'm', 250],
+  tilapia: ['Filete de tilapia / pescado blanco', 'car', 'g', 1000, 145, 'f', 250],
+  atun: ['Atún en agua (lata 140g)', 'aba', 'pz', 1, 22, 'f'],
+  sardina: ['Sardinas en salsa de tomate (lata 425g)', 'aba', 'g', 425, 38, 'f'],
+  camaron: ['Camarón pacotilla / pelado', 'con', 'g', 500, 165, 'f'],
+  jamon: ['Jamón de pavo bajo en sodio', 'lac', 'g', 250, 48, 'm'],
+  tofu: ['Tofu firme natural', 'lac', 'g', 400, 48, ''],
+  soya: ['Soya texturizada deshidratada', 'aba', 'g', 350, 28, ''],
+
+  // Lácteos, huevo y quesos frescos
+  huevo: ['Huevo blanco fresco', 'lac', 'pz', 18, 62, 'e'],
+  leche: ['Leche descremada / light', 'lac', 'ml', 1000, 28, 'd'],
+  yogurt: ['Yogurt griego natural sin azúcar', 'lac', 'g', 1000, 78, 'd'],
+  panela: ['Queso panela fresco bajo en sodio', 'lac', 'g', 400, 72, 'd'],
+  oaxaca: ['Queso Oaxaca / hebra reducido en grasa', 'lac', 'g', 400, 88, 'd'],
+  cottage: ['Queso cottage bajo en grasa', 'lac', 'g', 400, 55, 'd'],
+  requeson: ['Requesón fresco natural', 'lac', 'g', 400, 45, 'd'],
+
+  // Leguminosas y semillas
+  frijol: ['Frijol negro o pinto limpio', 'aba', 'g', 1000, 42, ''],
+  lenteja: ['Lentejas limpias', 'aba', 'g', 500, 30, ''],
+  garbanzo: ['Garbanzo cocido en lata (400 g)', 'aba', 'g', 400, 26, ''],
+  chia: ['Semillas de chía', 'aba', 'g', 250, 38, ''],
+  cacahuate: ['Cacahuates naturales tostados', 'aba', 'g', 200, 32, ''],
+  almendra: ['Almendras enteras naturales', 'aba', 'g', 150, 55, ''],
+  mantcac: ['Crema de cacahuate 100% natural', 'aba', 'g', 340, 62, ''],
+
+  // Cereales y carbohidratos saludables
+  avena: ['Avena en hojuelas natural', 'aba', 'g', 800, 44, 'c'],
+  arroz: ['Arroz integral o blanco grano largo', 'aba', 'g', 1000, 36, 'c'],
+  pasta: ['Pasta integral / regular para sopa', 'aba', 'g', 200, 18, 'c'],
+  tortilla: ['Tortilla de maíz nixtamalizado', 'pan', 'g', 1000, 26, 'c'],
+  tostada: ['Tostadas horneadas sin grasa', 'pan', 'g', 240, 34, 'c'],
+  pan: ['Pan de caja 100% integral', 'pan', 'g', 680, 58, 'c'],
+  papa: ['Papa blanca limpia', 'fyv', 'g', 1000, 36, 'c', 250],
+  camote: ['Camote amarillo / naranja', 'fyv', 'g', 1000, 38, 'c', 250],
+
+  // Frutas y verduras frescas
+  jitomate: ['Jitomate guaje fresco', 'fyv', 'g', 1000, 32, '', 250],
+  tomverde: ['Tomate verde / tomatillo', 'fyv', 'g', 1000, 30, '', 250],
+  cebolla: ['Cebolla blanca', 'fyv', 'g', 1000, 30, '', 250],
+  ajo: ['Ajo fresco (cabeza)', 'fyv', 'pz', 2, 14, ''],
+  serrano: ['Chile serrano / jalapeño', 'fyv', 'g', 500, 25, '', 100],
+  pimiento: ['Pimiento morrón verde o rojo', 'fyv', 'pz', 2, 24, ''],
+  calabacita: ['Calabacita tierna mexicana', 'fyv', 'g', 1000, 32, '', 250],
+  brocoli: ['Brócoli fresco en ramilletes', 'fyv', 'g', 1000, 52, '', 250],
+  espinaca: ['Espinaca fresca desinfectada', 'fyv', 'g', 250, 26, ''],
+  champi: ['Champiñones blancos frescos', 'fyv', 'g', 200, 32, ''],
+  zanahoria: ['Zanahoria fresca de mesa', 'fyv', 'g', 1000, 22, '', 250],
+  lechuga: ['Lechuga romana / orejona fresca', 'fyv', 'pz', 1, 22, ''],
+  pepino: ['Pepino verde fresco', 'fyv', 'g', 1000, 24, '', 250],
+  jicama: ['Jícama fresca', 'fyv', 'g', 1000, 26, '', 250],
+  ejote: ['Ejotes tiernos frescos', 'fyv', 'g', 1000, 45, '', 250],
+  aguacate: ['Aguacate Hass maduro', 'fyv', 'g', 1000, 75, '', 250],
+  limon: ['Limón Colima con semilla', 'fyv', 'g', 1000, 36, '', 250],
+  cilantro: ['Cilantro fresco (manojo)', 'fyv', 'pz', 1, 8, ''],
+  nopales: ['Nopales tiernos limpios', 'fyv', 'g', 1000, 28, '', 250],
+  platano: ['Plátano Tabasco', 'fyv', 'g', 1000, 26, '', 250],
+  manzana: ['Manzana nacional fresca', 'fyv', 'g', 1000, 48, '', 250],
+  fresa: ['Fresas desinfectadas / congeladas', 'fyv', 'g', 500, 52, ''],
+  papaya: ['Papaya Maradol', 'fyv', 'g', 1000, 28, '', 500],
+
+  // Despensa básica y aderezos
+  aceite: ['Aceite vegetal o de oliva para cocinar', 'aba', 'ml', 500, 48, ''],
+  chipotle: ['Chiles chipotles en adobo (lata)', 'aba', 'g', 200, 24, ''],
+  soya_salsa: ['Salsa de soya reducida en sodio', 'aba', 'ml', 150, 34, ''],
+  miel: ['Miel pura de abeja', 'aba', 'g', 300, 58, 'h'],
+  choco: ['Chocolate amargo 70% sin azúcar', 'aba', 'g', 100, 38, ''],
+  gelatina: ['Gelatina sin azúcar en polvo', 'aba', 'g', 25, 18, '', null],
+  curcuma: ['Cúrcuma en polvo', 'aba', 'g', 50, 20, '', null],
+  canela: ['Canela en polvo', 'aba', 'g', 50, 18, ''],
+  edamame: ['Edamames congelados en vaina', 'con', 'g', 500, 68, '']
+};
+
+const AISLES = {
+  fyv: { name: 'Frutas y Verduras', icon: '🥦' },
+  car: { name: 'Carnes, Pollo y Pescados', icon: '🥩' },
+  lac: { name: 'Lácteos, Huevo y Quesos', icon: '🧀' },
+  pan: { name: 'Tortillería y Panadería', icon: '🌽' },
+  aba: { name: 'Abarrotes, Granos y Legumbres', icon: '🥫' },
+  con: { name: 'Congelados', icon: '🧊' }
+};
+
+/* ==========================================================================
+   2. CATÁLOGO EXPANDIDO DE RECETAS SALUDABLES (54 RECETAS VARIADAS)
+   s: tiempos (des, alm, cen, sm, st)
+   st: estilos (mex, rapido, med, ligera, conf, econom)
+   clin: tags clínicos (dm2, hta, deficit, hiper, digestivo)
+   kc: kcal, pr: proteína g, ch: carbohidratos g, gr: grasas g, fib: fibra g
+   ========================================================================== */
+const R = [
+  // --- DESAYUNOS (12 OPCIONES) ---
+  {
+    n: 'Huevos a la mexicana con frijoles de olla',
+    s: ['des'], st: ['mex', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 460, pr: 25, ch: 45, gr: 18, fib: 11,
+    i: { huevo: 2, jitomate: 70, cebolla: 25, serrano: 5, frijol: 50, tortilla: 60, aceite: 5 },
+    time: '15 min',
+    p: 'Saltea jitomate, cebolla y chile picados con 1 cdta de aceite. Agrega 2 huevos batidos y revuelve a fuego medio. Sirve con frijoles de la olla calientes y 2 tortillas de maíz.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Avena con manzana, canela y chía',
+    s: ['des'], st: ['rapido', 'conf', 'econom'], clin: ['dm2', 'hta', 'digestivo'],
+    kc: 390, pr: 14, ch: 62, gr: 9, fib: 12,
+    i: { avena: 55, leche: 200, manzana: 100, chia: 10, canela: 2 },
+    time: '10 min',
+    p: 'Cocina la avena con la leche descremada y canela durante 5 minutos. Retira del fuego, agrega la manzana en cubos y espolvorea las semillas de chía.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Omelette de espinacas y champiñones con panela',
+    s: ['des'], st: ['ligera', 'rapido'], clin: ['dm2', 'hta', 'deficit', 'hiper'],
+    kc: 350, pr: 28, ch: 10, gr: 21, fib: 4,
+    i: { huevo: 2, espinaca: 50, champi: 60, panela: 50, aceite: 5 },
+    time: '12 min',
+    p: 'Saltea champiñones rebanados y espinacas tiernas con aceite. Vierte los huevos batidos, sazona con sal y orégano, y dobla agregando queso panela en cubos al centro.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Molletes saludables en pan integral con pico de gallo',
+    s: ['des'], st: ['mex', 'conf', 'econom'], clin: ['dm2', 'deficit'],
+    kc: 430, pr: 22, ch: 54, gr: 14, fib: 10,
+    i: { pan: 70, frijol: 50, oaxaca: 40, jitomate: 60, cebolla: 20, cilantro: 0.1 },
+    time: '15 min',
+    p: 'Unta frijoles machacados sin manteca sobre 2 rebanadas de pan integral. Coloca queso Oaxaca deshebrado encima y hornea o calienta en sartén con tapa hasta gratinar. Cubre con pico de gallo fresco.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tacos de huevo con nopales asados y salsa verde',
+    s: ['des'], st: ['mex', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 380, pr: 22, ch: 42, gr: 14, fib: 9,
+    i: { huevo: 2, nopales: 150, tortilla: 60, tomverde: 80, serrano: 5, cilantro: 0.1, aceite: 5 },
+    time: '15 min',
+    p: 'Asa los nopales en cubos en comal hasta que sequen su baba. Revuelve con 2 huevos batidos. Sirve en tortillas de maíz calientes y baña con salsa verde casera de tomatillo cocido.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Yogurt griego con papaya, chía y almendras',
+    s: ['des'], st: ['ligera', 'rapido'], clin: ['hta', 'digestivo', 'hiper'],
+    kc: 370, pr: 24, ch: 40, gr: 13, fib: 8,
+    i: { yogurt: 200, papaya: 150, chia: 10, almendra: 15 },
+    time: '5 min',
+    p: 'Coloca el yogurt griego natural en un tazón. Añade la papaya picada en cubos, esparce las semillas de chía y termina con las almendras rebanadas.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tostadas de pan integral con aguacate y huevo estrellado',
+    s: ['des'], st: ['med', 'rapido'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 440, pr: 20, ch: 38, gr: 23, fib: 9,
+    i: { pan: 60, aguacate: 70, huevo: 2, jitomate: 40, limon: 10 },
+    time: '12 min',
+    p: 'Tuesta el pan. Tritura el aguacate con jugo de limón y una pizca de sal, y úntalo en el pan. Corona con huevos cocinados a la plancha y rebanadas de jitomate.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Chilaquiles verdes horneados con pollo y panela',
+    s: ['des'], st: ['mex', 'conf'], clin: ['dm2', 'hiper', 'deficit'],
+    kc: 490, pr: 36, ch: 50, gr: 15, fib: 7,
+    i: { tortilla: 80, pollo: 100, tomverde: 120, serrano: 5, panela: 40, cebolla: 20, cilantro: 0.1 },
+    time: '20 min',
+    p: 'Corta las tortillas en triángulos y tuéstalas en comal u horno sin aceite. Baña con salsa de tomate verde y chile hervidos. Agrega pechuga de pollo deshebrada, queso panela y aros de cebolla.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tofu revuelto a la mexicana con espinacas',
+    s: ['des'], st: ['ligera', 'mex', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 340, pr: 23, ch: 38, gr: 11, fib: 8,
+    i: { tofu: 150, espinaca: 60, jitomate: 60, cebolla: 25, tortilla: 60, aceite: 5, curcuma: 1 },
+    time: '12 min',
+    p: 'Desmenuza el tofu con un tenedor y añade cúrcuma y sal. Saltea con cebolla, jitomate y espinaca con una cucharadita de aceite. Sirve calientito con tortillas.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Licuado verde de avena, espinaca, plátano y leche light',
+    s: ['des'], st: ['rapido', 'econom', 'ligera'], clin: ['hta', 'digestivo'],
+    kc: 360, pr: 16, ch: 66, gr: 5, fib: 9,
+    i: { avena: 45, espinaca: 40, platano: 120, leche: 250, chia: 10 },
+    time: '5 min',
+    p: 'Coloca en la licuadora la leche descremada, avena cruda, espinacas tiernas, plátano maduro y semillas de chía. Licúa a máxima velocidad por 1 minuto hasta que quede cremoso.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Huevos al albañil en salsa roja con nopales',
+    s: ['des'], st: ['mex', 'conf', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 410, pr: 24, ch: 38, gr: 18, fib: 8,
+    i: { huevo: 2, jitomate: 120, cebolla: 25, serrano: 5, nopales: 100, tortilla: 60, aceite: 5 },
+    time: '18 min',
+    p: 'Prepara una salsa licuando jitomate asado con cebolla y chile. Cuájala en sartén. Agrega 2 huevos previamente revueltos y los nopales asados en cubos. Deja hervir 3 min.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Hot cakes de avena y plátano sin azúcar añadida',
+    s: ['des'], st: ['conf', 'rapido'], clin: ['dm2', 'digestivo'],
+    kc: 420, pr: 18, ch: 68, gr: 8, fib: 9,
+    i: { avena: 60, platano: 100, huevo: 1, leche: 60, canela: 2 },
+    time: '15 min',
+    p: 'Licúa la avena, el plátano maduro, el huevo, la leche y la canela. Vierte porciones en un sartén antiadherente ligeramente engrasado a fuego bajo. Voltea cuando salgan burbujas.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+
+  // --- COMIDAS / ALMUERZOS (18 OPCIONES) ---
+  {
+    n: 'Pechuga de pollo a la plancha con brócoli y arroz',
+    s: ['alm', 'cen'], st: ['ligera', 'rapido'], clin: ['dm2', 'hta', 'deficit', 'hiper'],
+    kc: 540, pr: 46, ch: 58, gr: 12, fib: 8,
+    i: { pollo: 160, brocoli: 150, arroz: 70, aceite: 8, limon: 15, ajo: 1 },
+    time: '20 min',
+    p: 'Sazona la pechuga de pollo con ajo machacado, sal y limón. Cocina a la plancha con un toque de aceite. Cuece el brócoli al vapor al dente (5 min) y acompaña con arroz caliente.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tinga de pollo con nopales en tostadas horneadas',
+    s: ['alm', 'cen'], st: ['mex', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 480, pr: 40, ch: 48, gr: 12, fib: 11,
+    i: { pollo: 140, nopales: 100, cebolla: 60, jitomate: 120, chipotle: 15, tostada: 45, aguacate: 30 },
+    time: '25 min',
+    p: 'Cocina y deshebra el pollo. Sofríe cebolla en juliana con jitomate licuado con chipotle. Agrega el pollo y nopales cocidos en tiritas; cocina 10 min. Sirve en tostadas horneadas con aguacate.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Filete de pescado a la veracruzana con calabacitas y arroz',
+    s: ['alm', 'cen'], st: ['med', 'mex', 'ligera'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 460, pr: 42, ch: 46, gr: 11, fib: 7,
+    i: { tilapia: 180, jitomate: 120, cebolla: 40, ajo: 1, pimiento: 0.5, calabacita: 120, arroz: 60, aceite: 8 },
+    time: '25 min',
+    p: 'Sofríe cebolla, ajo, pimiento y jitomate picados. Coloca los filetes de tilapia sobre la salsa y cocina tapado a fuego bajo por 10 min. Acompaña con calabacitas al vapor y arroz.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Picadillo magro con verduras y tortillas de maíz',
+    s: ['alm', 'cen'], st: ['mex', 'conf', 'econom'], clin: ['dm2', 'deficit', 'hiper'],
+    kc: 520, pr: 36, ch: 52, gr: 16, fib: 9,
+    i: { molida: 140, papa: 80, zanahoria: 70, calabacita: 80, jitomate: 100, cebolla: 30, tortilla: 60, ajo: 1 },
+    time: '25 min',
+    p: 'Dora la carne molida magra con cebolla y ajo picados. Licúa el jitomate con poca agua y vierte sobre la carne. Añade zanahoria, papa y calabacita en cubos pequeños. Tapa y cocina 15 min.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Sopa tradicional de lentejas con verduras y huevo cocido',
+    s: ['alm', 'cen'], st: ['conf', 'mex', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 450, pr: 26, ch: 62, gr: 10, fib: 16,
+    i: { lenteja: 75, huevo: 1, zanahoria: 60, jitomate: 100, cebolla: 30, espinaca: 40, platano: 40 },
+    time: '30 min',
+    p: 'Hierve las lentejas con cebolla y ajo. Agrega recaudo de jitomate molido, zanahoria picada y espinaca. Sirve en tazón con un huevo cocido partido a la mitad y trocitos de plátano.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Fajitas de pollo con pimientos, frijoles y aguacate',
+    s: ['alm', 'cen'], st: ['mex', 'rapido'], clin: ['dm2', 'hta', 'deficit', 'hiper'],
+    kc: 530, pr: 44, ch: 46, gr: 18, fib: 12,
+    i: { pollo: 150, pimiento: 1, cebolla: 50, frijol: 60, aguacate: 40, tortilla: 60, aceite: 8 },
+    time: '18 min',
+    p: 'Corta el pollo y los pimientos en tiras. Saltea a fuego vivo en sartén con aceite y cebolla hasta dorar. Sirve con frijoles de la olla machacados, tortillas de maíz y rebanadas de aguacate.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Caldo tlalpeño saludable con pollo, garbanzo y calabacita',
+    s: ['alm', 'cen'], st: ['mex', 'conf'], clin: ['dm2', 'hta', 'digestivo'],
+    kc: 470, pr: 40, ch: 48, gr: 12, fib: 10,
+    i: { pollo: 140, garbanzo: 80, calabacita: 100, zanahoria: 60, jitomate: 80, chipotle: 10, aguacate: 30, limon: 15 },
+    time: '30 min',
+    p: 'Hierve pechuga con cebolla, ajo y jitomate licuado con un toque de chipotle. Añade los garbanzos, zanahoria y calabacitas en trozos hasta que estén suaves. Sirve con pollo deshebrado, aguacate y limón.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Salpicón de res con lechuga, jitomate, aguacate y tostadas',
+    s: ['alm', 'cen'], st: ['mex', 'ligera', 'rapido'], clin: ['dm2', 'deficit'],
+    kc: 480, pr: 38, ch: 38, gr: 19, fib: 9,
+    i: { bistec: 140, lechuga: 0.4, jitomate: 80, cebolla: 30, aguacate: 40, tostada: 40, limon: 15 },
+    time: '20 min',
+    p: 'Cuece la carne de res y deshébrala. Mézclala fría con lechuga picada, jitomate, cebolla morada o blanca, orégano, jugo de limón y una pizca de sal. Sirve sobre tostadas horneadas con aguacate.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Albóndigas de pollo o res en caldillo de jitomate con calabacita',
+    s: ['alm', 'cen'], st: ['mex', 'conf', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 510, pr: 38, ch: 48, gr: 17, fib: 8,
+    i: { molida: 140, arroz: 25, huevo: 0.4, jitomate: 130, calabacita: 100, zanahoria: 60, cebolla: 25 },
+    time: '30 min',
+    p: 'Mezcla la carne molida con un poco de huevo, arroz crudo y sal; forma albóndigas medianas. Cuécelas dentro del caldillo de jitomate hirviendo con calabacita y zanahoria por 20 min.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Bistec magro encebollado con nopales asados y frijoles',
+    s: ['alm', 'cen'], st: ['mex', 'rapido'], clin: ['dm2', 'hiper', 'deficit'],
+    kc: 530, pr: 42, ch: 42, gr: 19, fib: 11,
+    i: { bistec: 150, cebolla: 80, nopales: 150, frijol: 60, tortilla: 60, aceite: 8 },
+    time: '18 min',
+    p: 'Acitrona abundante cebolla en rodajas. Sella el bistec de res a fuego alto con sal y pimienta. Acompaña con nopales enteros asados en el mismo sartén, frijoles calientes y tortillas.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tacos de pescado blanco a la plancha con ensalada de col y limón',
+    s: ['alm', 'cen'], st: ['mex', 'ligera', 'rapido'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 460, pr: 38, ch: 48, gr: 12, fib: 8,
+    i: { tilapia: 170, tortilla: 75, lechuga: 0.3, jitomate: 60, aguacate: 30, limon: 20, aceite: 6 },
+    time: '15 min',
+    p: 'Sazona los filetes con ajo, pimienta y limón; ásalos a la plancha 3 min por lado. Desmenuza ligeramente y arma tacos en tortilla de maíz caliente con ensalada fresca de lechuga y jitomate, y aguacate.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Ensalada tibia de garbanzos con atún en agua y jitomate',
+    s: ['alm', 'cen'], st: ['med', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 440, pr: 36, ch: 46, gr: 11, fib: 12,
+    i: { garbanzo: 180, atun: 1, jitomate: 100, pepino: 80, cebolla: 25, aceite: 8, limon: 15 },
+    time: '10 min',
+    p: 'Enjuaga y escurre los garbanzos y la lata de atún en agua. Mezcla en un tazón con jitomate, pepino y cebolla picados. Aliña con 1 cucharadita de aceite, limón, orégano y sal marina.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Lomo de cerdo en salsa verde con nopales y frijoles',
+    s: ['alm', 'cen'], st: ['mex', 'conf'], clin: ['dm2', 'deficit', 'hiper'],
+    kc: 540, pr: 44, ch: 42, gr: 20, fib: 11,
+    i: { cerdo: 160, tomverde: 120, serrano: 5, nopales: 120, frijol: 50, tortilla: 60, cilantro: 0.1 },
+    time: '25 min',
+    p: 'Corta el lomo de cerdo en cubos y sella en sartén sin grasa adicional. Baña con salsa de tomate verde y chile cocidos con cilantro. Agrega nopales picados y deja cocer 15 min. Sirve con frijoles.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Pasta integral con atún en agua y salsa de jitomate casera',
+    s: ['alm', 'cen'], st: ['med', 'rapido', 'econom'], clin: ['hta', 'deficit'],
+    kc: 490, pr: 36, ch: 64, gr: 10, fib: 8,
+    i: { pasta: 80, atun: 1, jitomate: 140, cebolla: 30, ajo: 1, espinaca: 50, aceite: 8 },
+    time: '15 min',
+    p: 'Cuece la pasta al dente. En sartén sofríe ajo y cebolla con aceite, agrega jitomate picado y cocina hasta formar salsa. Incorpora el atún escurrido y espinacas tiernas; mezcla con la pasta.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Alambre de pollo con pimientos, champiñones y queso ligero',
+    s: ['alm', 'cen'], st: ['mex', 'rapido'], clin: ['dm2', 'hiper', 'deficit'],
+    kc: 490, pr: 46, ch: 38, gr: 17, fib: 8,
+    i: { pollo: 150, pimiento: 1, champi: 80, cebolla: 40, oaxaca: 40, tortilla: 60, aceite: 6 },
+    time: '18 min',
+    p: 'Saltea en sartén tiras de pechuga con pimiento, cebolla y champiñones con poco aceite. Cuando todo esté dorado, coloca el queso Oaxaca deshebrado encima, apaga el fuego y tapa hasta derretir. Con tortillas.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Calabacitas rellenas de picadillo magro gratinadas con panela',
+    s: ['alm', 'cen'], st: ['mex', 'ligera'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 430, pr: 36, ch: 28, gr: 18, fib: 8,
+    i: { calabacita: 250, molida: 130, jitomate: 80, cebolla: 30, panela: 50, tortilla: 30 },
+    time: '25 min',
+    p: 'Cuece las calabacitas a la mitad en agua con sal por 6 min; retira la pulpa con cuchara. Mezcla la pulpa con el picadillo magro de res cocido. Rellena las calabacitas, cubre con panela y gratina en sartén.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Arroz frito casero con huevo, pechuga de pollo y verduras',
+    s: ['alm', 'cen'], st: ['rapido', 'conf'], clin: ['deficit', 'hiper'],
+    kc: 520, pr: 38, ch: 58, gr: 14, fib: 6,
+    i: { arroz: 70, pollo: 110, huevo: 1, zanahoria: 50, calabacita: 60, cebolla: 30, soya_salsa: 15, aceite: 8 },
+    time: '18 min',
+    p: 'Saltea el pollo en cubos con cebolla, zanahoria y calabacita en tiritas. Haz un espacio en el sartén y revuelve el huevo. Agrega el arroz cocido frío y sazona con la salsa de soya baja en sodio.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Curry ligero de garbanzos con espinacas y arroz',
+    s: ['alm', 'cen'], st: ['conf', 'econom'], clin: ['dm2', 'hta', 'digestivo'],
+    kc: 470, pr: 20, ch: 68, gr: 11, fib: 14,
+    i: { garbanzo: 180, espinaca: 70, jitomate: 100, cebolla: 30, ajo: 1, arroz: 60, aceite: 8 },
+    time: '20 min',
+    p: 'Sofríe cebolla y ajo con una cucharadita de curry en polvo y sal. Agrega el jitomate licuado y los garbanzos cocidos. Deja hervir 8 min, añade las espinacas al final hasta que reduzcan y sirve con arroz.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+
+  // --- CENAS LIGERAS (12 OPCIONES) ---
+  {
+    n: 'Ensalada de nopales con queso panela asado y aguacate',
+    s: ['cen'], st: ['mex', 'ligera', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 330, pr: 20, ch: 18, gr: 20, fib: 9,
+    i: { nopales: 200, panela: 80, aguacate: 50, jitomate: 60, cebolla: 20, cilantro: 0.1, limon: 10 },
+    time: '12 min',
+    p: 'Corta los nopales cocidos o asados y mézclalos con jitomate, cebolla, cilantro y jugo de limón. Dora el queso panela en rebanadas en el comal y sirve encima con rebanadas de aguacate fresco.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Sincronizada en tortilla de maíz con pechuga de pavo y panela',
+    s: ['cen'], st: ['mex', 'rapido'], clin: ['dm2', 'deficit', 'hiper'],
+    kc: 370, pr: 26, ch: 38, gr: 12, fib: 6,
+    i: { tortilla: 60, jamon: 60, panela: 50, jitomate: 50, cebolla: 15, cilantro: 0.1 },
+    time: '8 min',
+    p: 'Coloca jamón de pavo y rebanadas de panela entre dos tortillas de maíz. Calienta en comal a fuego bajo hasta que el queso se suavice. Acompaña con pico de gallo casero abundante.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tostadas horneadas de atún a la mexicana con lechuga',
+    s: ['cen'], st: ['mex', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 350, pr: 32, ch: 34, gr: 9, fib: 7,
+    i: { atun: 1, tostada: 35, jitomate: 70, cebolla: 25, serrano: 5, lechuga: 0.25, aguacate: 30, limon: 10 },
+    time: '8 min',
+    p: 'Drena el atún en agua. Mezcla con jitomate, cebolla, chile picado y limón. Unta aguacate en tostadas horneadas, añade cama de lechuga rebanada y monta el atún.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Sopa ligera de verduras con pechuga deshebrada',
+    s: ['cen'], st: ['conf', 'ligera', 'econom'], clin: ['dm2', 'hta', 'deficit', 'digestivo'],
+    kc: 310, pr: 32, ch: 24, gr: 8, fib: 7,
+    i: { pollo: 110, calabacita: 100, zanahoria: 70, espinaca: 50, jitomate: 60, cilantro: 0.1, limon: 10 },
+    time: '18 min',
+    p: 'Hierve caldillo ligero de jitomate con cebolla. Agrega zanahoria y calabacita en tiritas y pechuga deshebrada. Al final agrega las espinacas y apaga. Sirve con cilantro y limón.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Omelette de champiñones y espinacas con pan tostado',
+    s: ['cen'], st: ['ligera', 'rapido'], clin: ['dm2', 'deficit', 'hiper'],
+    kc: 360, pr: 24, ch: 28, gr: 17, fib: 6,
+    i: { huevo: 2, champi: 70, espinaca: 40, pan: 35, aceite: 5 },
+    time: '10 min',
+    p: 'Saltea champiñones y espinacas con una cucharadita de aceite. Añade 2 huevos batidos con sal y pimienta. Dobla a la mitad y sirve con 1 rebanada de pan 100% integral tostado.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Crema casera de calabacita y cilantro con queso panela',
+    s: ['cen'], st: ['conf', 'ligera', 'econom'], clin: ['dm2', 'hta', 'digestivo'],
+    kc: 280, pr: 18, ch: 22, gr: 12, fib: 6,
+    i: { calabacita: 250, leche: 150, panela: 60, cebolla: 25, ajo: 1, cilantro: 0.1, tostada: 20 },
+    time: '15 min',
+    p: 'Cuece las calabacitas con cebolla y ajo 8 min. Licúa con leche descremada tibia, cilantro fresco y sal. Calienta 2 min y sirve en tazón con cubos de queso panela fresco y tostadas horneadas.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Ensalada verde con pechuga asada, manzana verde y nuez',
+    s: ['cen'], st: ['ligera', 'rapido'], clin: ['dm2', 'deficit', 'hiper'],
+    kc: 380, pr: 36, ch: 26, gr: 14, fib: 6,
+    i: { pollo: 130, lechuga: 0.4, manzana: 80, almendra: 15, limon: 15, aceite: 5 },
+    time: '12 min',
+    p: 'Asa la pechuga a la plancha y córtala en tiras. Coloca sobre una cama de lechuga fresca con rebanadas delgadas de manzana verde y almendras fileteadas. Aliña con limón y aceite de oliva.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tacos de lechuga con atún preparado a la mexicana',
+    s: ['cen'], st: ['ligera', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 290, pr: 30, ch: 14, gr: 12, fib: 5,
+    i: { atun: 1, lechuga: 0.4, jitomate: 70, cebolla: 25, aguacate: 40, limon: 15 },
+    time: '8 min',
+    p: 'Mezcla el atún en agua con jitomate, cebolla picada, aguacate en cubitos y jugo de limón. Usa hojas enteras de lechuga romana como tortillas y rellénalas con el atún.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Quesadillas de maíz con champiñones y espinacas',
+    s: ['cen'], st: ['mex', 'rapido', 'econom'], clin: ['dm2', 'deficit'],
+    kc: 340, pr: 18, ch: 40, gr: 12, fib: 7,
+    i: { tortilla: 60, oaxaca: 40, champi: 80, espinaca: 40, tomverde: 50, serrano: 5 },
+    time: '10 min',
+    p: 'Saltea champiñones y espinacas en comal hasta que ablanden. Rellena las tortillas de maíz agregando queso Oaxaca deshebrado y dora hasta gratinar. Acompaña con salsa de molcajete.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Pescado empapelado con hierbas finas y verduras al vapor',
+    s: ['cen'], st: ['ligera', 'med'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 320, pr: 36, ch: 16, gr: 10, fib: 6,
+    i: { tilapia: 160, calabacita: 100, zanahoria: 60, pimiento: 0.5, limon: 15, aceite: 6 },
+    time: '20 min',
+    p: 'Coloca el filete en papel aluminio o papel encerado con calabacita, zanahoria y pimiento en tiras finas. Sazona con sal, hierbas y aceite. Cierra el paquete y cocina en comal o sartén tapado 15 min.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Salteado rápido de tofu con ejotes, calabacitas y soya light',
+    s: ['cen'], st: ['ligera', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 310, pr: 22, ch: 22, gr: 13, fib: 8,
+    i: { tofu: 150, ejote: 100, calabacita: 100, soya_salsa: 15, ajo: 1, aceite: 6 },
+    time: '12 min',
+    p: 'Corta el tofu en cubos y dóralo en sartén con aceite y ajo. Agrega ejotes precocidos y calabacitas en rodajas. Vierte la salsa de soya baja en sodio y saltea a fuego alto 4 min.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Bowl ligero de yogurt griego con fresas y chía',
+    s: ['cen'], st: ['ligera', 'rapido'], clin: ['hta', 'digestivo', 'hiper'],
+    kc: 290, pr: 22, ch: 30, gr: 8, fib: 7,
+    i: { yogurt: 200, fresa: 120, chia: 10, canela: 2 },
+    time: '5 min',
+    p: 'Sirve el yogurt griego en un tazón hondo. Cubre con fresas frescas rebanadas, espolvorea las semillas de chía y un toque de canela molida.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+
+  // --- SNACKS Y COLACIONES (12 OPCIONES: 6 DULCES Y 6 SALADOS) ---
+  {
+    n: 'Bastones de pepino y jícama con limón y chile',
+    s: ['ss'], st: ['mex', 'ligera', 'rapido', 'econom'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 85, pr: 3, ch: 18, gr: 1, fib: 6,
+    i: { pepino: 120, jicama: 120, limon: 15 },
+    time: '5 min',
+    p: 'Pela y corta el pepino y la jícama en bastones delgados. Baña con abundante jugo de limón fresco y chile piquín en polvo sin azúcar.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Manzana rebanada con crema de cacahuate natural',
+    s: ['sd'], st: ['rapido', 'conf'], clin: ['dm2', 'digestivo'],
+    kc: 210, pr: 6, ch: 28, gr: 9, fib: 5,
+    i: { manzana: 130, mantcac: 18 },
+    time: '3 min',
+    p: 'Rebana la manzana en gajos y acompaña con una cucharada sopera de crema de cacahuate 100% natural sin azúcar añadida.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Rollitos de jamón de pavo con queso panela',
+    s: ['ss'], st: ['rapido', 'ligera'], clin: ['dm2', 'deficit', 'hiper'],
+    kc: 160, pr: 18, ch: 3, gr: 9, fib: 0,
+    i: { jamon: 50, panela: 50 },
+    time: '3 min',
+    p: 'Coloca bastones de queso panela fresco sobre rebanadas de jamón de pavo bajo en sodio y enrolla firmemente.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Puñado de cacahuates o almendras tostadas naturales',
+    s: ['ss'], st: ['rapido', 'econom'], clin: ['dm2', 'hta', 'cardio'],
+    kc: 175, pr: 8, ch: 6, gr: 14, fib: 3,
+    i: { cacahuate: 30 },
+    time: '1 min',
+    p: 'Sirve una porción pesada de 30 gramos de cacahuates o almendras naturales sin sal añadida.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Yogurt griego con fresas frescas',
+    s: ['sd'], st: ['ligera', 'rapido'], clin: ['dm2', 'hta', 'hiper'],
+    kc: 160, pr: 14, ch: 18, gr: 3, fib: 3,
+    i: { yogurt: 130, fresa: 80 },
+    time: '3 min',
+    p: 'Sirve el yogurt griego sin azúcar en un tazón pequeño y acompaña con fresas frescas lavadas y picadas.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tostada de pan integral con queso cottage y canela',
+    s: ['sd'], st: ['rapido', 'conf'], clin: ['dm2', 'deficit', 'hiper'],
+    kc: 170, pr: 14, ch: 20, gr: 3, fib: 3,
+    i: { pan: 35, cottage: 70, canela: 1 },
+    time: '3 min',
+    p: 'Tuesta el pan integral, unta el queso cottage bajo en grasa y espolvorea canela molida encima.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Tostada horneada con frijoles de olla y aguacate',
+    s: ['ss'], st: ['mex', 'econom', 'rapido'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 170, pr: 6, ch: 24, gr: 6, fib: 6,
+    i: { tostada: 20, frijol: 40, aguacate: 25 },
+    time: '3 min',
+    p: 'Unta frijoles machacados de la olla sobre una tostada horneada y decora con rebanadas de aguacate y sal de mar.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Nopal asado con orégano y cubo de queso panela',
+    s: ['ss'], st: ['mex', 'econom', 'ligera'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 120, pr: 10, ch: 8, gr: 6, fib: 5,
+    i: { nopales: 120, panela: 45 },
+    time: '6 min',
+    p: 'Asa una penca de nopal en comal con sal y orégano seco. Retira y coloca encima una rebanada de queso panela caliente.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Guacamole fresco con bastones de zanahoria',
+    s: ['ss'], st: ['mex', 'rapido'], clin: ['dm2', 'hta', 'deficit'],
+    kc: 160, pr: 3, ch: 14, gr: 11, fib: 6,
+    i: { aguacate: 50, zanahoria: 80, limon: 10, cebolla: 10 },
+    time: '5 min',
+    p: 'Machaca el aguacate con limón, cebolla picada y sal. Usa bastones de zanahoria cruda para chopear.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Plátano con chocolate amargo 70% sin azúcar',
+    s: ['sd'], st: ['conf', 'rapido'], clin: ['hta', 'digestivo'],
+    kc: 190, pr: 3, ch: 32, gr: 7, fib: 4,
+    i: { platano: 100, choco: 15 },
+    time: '3 min',
+    p: 'Corta el plátano en rodajas y baña con chocolate amargo 70% derretido en microondas o a baño maría.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Edamames al vapor con sal de mar y limón',
+    s: ['ss'], st: ['ligera', 'rapido'], clin: ['dm2', 'hta', 'deficit', 'hiper'],
+    kc: 140, pr: 12, ch: 10, gr: 5, fib: 5,
+    i: { edamame: 100, limon: 10 },
+    time: '6 min',
+    p: 'Hierve los edamames en vaina por 4 minutos. Escurre, exprime limón y espolvorea sal de grano.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  },
+  {
+    n: 'Gelatina light con cubitos de fruta fresca',
+    s: ['sd'], st: ['ligera', 'econom', 'rapido'], clin: ['dm2', 'deficit'],
+    kc: 60, pr: 3, ch: 12, gr: 0, fib: 2,
+    i: { fresa: 50, platano: 30, gelatina: 3 },
+    time: '5 min',
+    p: 'Sirve gelatina preparada sin azúcar y agrega trocitos de fresa y plátano fresco.',
+    nutriTip: 'Revisa porciones, ingredientes y preparación con tu profesional. Valores nutricionales de referencia.',
+    saveTip: 'Aprovecha los ingredientes de tu despensa y compara precios por unidad.'
+  }
+];
+
+R.forEach((r, idx) => r.id = idx);
+
+/* ==========================================================================
+   3. METAS CLÍNICAS Y PRESETS DEL NUTRIÓLOGO / MÉDICO
+   ========================================================================== */
+const CLINICAL_GOALS = {
+  general: { name: 'Mantenimiento y Salud General', desc: 'Dieta balanceada para prevención cardiovascular y vitalidad.', calFactor: 30 },
+  dm2: { name: 'Control Glucémico (Diabetes / Resistencia a Insulina)', desc: 'Carbohidratos complejos de bajo índice glucémico y alta fibra.', calFactor: 26 },
+  hta: { name: 'Control de Presión Arterial (Estilo DASH)', desc: 'Bajo en sodio (<1500mg), abundante en potasio, magnesio y calcio.', calFactor: 28 },
+  deficit: { name: 'Pérdida de Grasa (Déficit Calórico Inteligente)', desc: 'Alto volumen, saciante, alto en proteína para preservar músculo.', calFactor: 24 },
+  cardio: { name: 'Salud Cardiovascular (Control Lipídico)', desc: 'Grasas monoinsaturadas y omega-3, bajo en grasas saturadas.', calFactor: 28 },
+  hiper: { name: 'Aumento de Masa Muscular (Hipertrofia)', desc: 'Mayor aporte proteico (1.6 a 2.0 g/kg) y energía sostenida.', calFactor: 34 }
+};
+
+const CLINICAL_TIPS_PRESETS = [
+  { id: 'water', text: 'Consumir al menos 2.0 a 2.5 litros de agua natural al día; evitar refrescos, jugos y bebidas azucaradas.' },
+  { id: 'cooking', text: 'Priorizar métodos de cocción al vapor, asado, empapelado o al horno; limitar el aceite a máximo 1-2 cditas por comida.' },
+  { id: 'veggies', text: 'Incluir al menos 1 taza de vegetales crudos o al vapor en la comida y en la cena (mitad del plato).' },
+  { id: 'salt', text: 'Moderar el uso de sal de mesa; sazonar con ajo fresco, limón, orégano, cilantro, pimienta y especias naturales.' },
+  { id: 'whole_fruit', text: 'Consumir las frutas enteras y con cáscara comestible para conservar la fibra soluble; evitar jugos colados.' },
+  { id: 'chewing', text: 'Masticar despacio cada bocado y dedicar al menos 20 minutos a cada tiempo de comida para favorecer las señales de saciedad.' },
+  { id: 'activity', text: 'Realizar al menos 30 a 45 minutos de actividad física aeróbica o de fuerza 4 a 5 días por semana.' }
+];
+
+/* ==========================================================================
+   4. ESTADO DE LA APLICACIÓN Y PERSISTENCIA (LOCALSTORAGE)
+   ========================================================================== */
+const DEFAULT_STATE = {
+  mode: 'patient', // 'patient' o 'clinician'
+  tab: 'menu',     // 'menu', 'list', 'budget', 'recipes', 'clinical', 'config'
+
+  // Datos del Paciente
+  patient: {
+    name: 'Carlos Mendoza',
+    age: 38,
+    weight: 78,    // kg
+    height: 172,   // cm
+    gender: 'm',
+    goal: 'dm2'    // key in CLINICAL_GOALS
+  },
+
+  // Datos del Profesional de la Salud
+  clinician: {
+    name: 'Lic. Sofía Villarreal H.',
+    license: 'CED. PROF. 11849203',
+    specialty: 'Especialista en Nutrición Clínica y Metabólica',
+    clinic: 'Centro Médico & Nutrición Integral',
+    phone: '+52 81 1234 5678',
+    notes: 'Priorizar hidratación matutina y caminata de 20 min después de la comida fuerte. Mantener monitoreo de glucosa en ayuno.'
+  },
+
+  // Parámetros de Planeación
+  budget: 950,
+  adults: 1,
+  kids: 0,
+  hasKids: false,
+  meals: { des: true, sm: false, alm: true, st: true, cen: true },
+  snack: { sm: 'salado', st: 'dulce' },
+  diet: 'none',   // 'none', 'veg', 'vegan', 'pesc'
+  lowcarb: false,
+  excl: [],
+
+  // Checklist de pautas médicas activas
+  activeTips: ['water', 'cooking', 'veggies', 'salt', 'whole_fruit', 'activity'],
+
+  // Menú y compras
+  plan: null,
+  seed: 1042,
+  got: {} // items marcados en la lista del mandado
+};
+
+let STATE;
+try {
+  const saved = localStorage.getItem('nutriplan_v2');
+  STATE = saved ? Object.assign(structuredClone(DEFAULT_STATE), JSON.parse(saved)) : structuredClone(DEFAULT_STATE);
+} catch (e) {
+  STATE = structuredClone(DEFAULT_STATE);
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('nutriplan_v2', JSON.stringify(STATE));
+  } catch (e) {}
+}
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+const money = v => '$' + Math.round(v).toLocaleString('es-MX');
+const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const servings = () => STATE.adults + (STATE.hasKids ? STATE.kids * 0.6 : 0);
+const peopleCount = () => STATE.adults + (STATE.hasKids ? STATE.kids : 0);
+const activeSlots = () => [['des','Desayuno'],['sm','Colación matutina'],['alm','Comida'],['st','Colación vespertina'],['cen','Cena']]
+  .filter(([k]) => STATE.meals[k]).map(([k]) => k);
+
+const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+const SLOT_NAMES = {
+  des: 'Desayuno',
+  sm: 'Colación matutina',
+  alm: 'Comida',
+  st: 'Colación vespertina',
+  cen: 'Cena'
+};
+
+/* ==========================================================================
+   5. CÁLCULOS NUTRICIONALES Y CLÍNICOS
+   ========================================================================== */
+function calcIMC(weight, height) {
+  if (!weight || !height) return { imc: 0, cat: 'No disponible', color: 'var(--fg-muted)' };
+  const hM = height / 100;
+  const imc = +(weight / (hM * hM)).toFixed(1);
+  let cat = 'Normal', color = 'var(--success)';
+  if (imc < 18.5) { cat = 'Bajo peso'; color = 'var(--amber)'; }
+  else if (imc < 25) { cat = 'Peso Saludable'; color = 'var(--success)'; }
+  else if (imc < 30) { cat = 'Sobrepeso'; color = 'var(--amber)'; }
+  else if (imc < 35) { cat = 'Obesidad Grado I'; color = 'var(--danger)'; }
+  else { cat = 'Obesidad Grado II/III'; color = 'var(--danger)'; }
+  return { imc, cat, color };
+}
+
+function calcTargetCalories() {
+  const goalObj = CLINICAL_GOALS[STATE.patient.goal] || CLINICAL_GOALS.general;
+  const base = Math.round(STATE.patient.weight * goalObj.calFactor);
+  return Math.max(1200, Math.min(3200, base));
+}
+
+function calcWaterLiters() {
+  return +(STATE.patient.weight * 0.035).toFixed(1); // 35ml por kg de peso
+}
+
+/* ==========================================================================
+   6. MOTOR DE PLANEACIÓN DEL MENÚ Y PRESUPUESTO
+   ========================================================================== */
+function recipeFlags(r) {
+  let f = '';
+  for (const k in r.i) {
+    if (I[k]) f += I[k][5] || '';
+  }
+  return f;
+}
+
+function isRecipeAllowed(r, slot) {
+  const f = recipeFlags(r);
+  if (STATE.diet === 'veg' && /[mf]/.test(f)) return false;
+  if (STATE.diet === 'vegan' && /[mfdeh]/.test(f)) return false;
+  if (STATE.diet === 'pesc' && /m/.test(f)) return false;
+  if (STATE.lowcarb && (slot === 'alm' || slot === 'cen') && /c/.test(f)) return false;
+  for (const k in r.i) {
+    if (STATE.excl.includes(k)) return false;
+  }
+  return true;
+}
+
+function getSlotType(slot) {
+  if (slot === 'sm' || slot === 'st') return STATE.snack[slot] === 'dulce' ? 'sd' : 'ss';
+  return slot;
+}
+
+function getCandidates(slot) {
+  const type = getSlotType(slot);
+  return R.filter(r => r.s.includes(type) && isRecipeAllowed(r, slot));
+}
+
+function unitCost(r) {
+  let c = 0;
+  for (const k in r.i) {
+    const item = I[k];
+    if (item) c += (r.i[k] * item[4]) / item[3];
+  }
+  return c;
+}
+
+function rng(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function buildWeeklyPlan() {
+  const rand = rng(STATE.seed);
+  const slots = activeSlots();
+  const used = {};
+  const plan = [];
+  const targetPerMeal = STATE.budget / Math.max(1, servings()) / (7 * Math.max(1, slots.length));
+
+  for (let d = 0; d < 7; d++) {
+    const day = {};
+    for (const slot of slots) {
+      const pool = getCandidates(slot);
+      if (!pool.length) { day[slot] = null; continue; }
+
+      let best = null;
+      let maxScore = -1e9;
+      for (const r of pool) {
+        const u = used[r.id] || 0;
+        const prev = d > 0 && plan[d - 1][slot] === r.id;
+        const costDiff = unitCost(r) - targetPerMeal;
+
+        // Bonificación clínica si empata con la meta del paciente
+        const clinBonus = (r.clin && r.clin.includes(STATE.patient.goal)) ? 1.5 : 0;
+
+        let score = rand() * 1.5 + clinBonus - (u * 2.2) - (prev ? 4 : 0) - (Object.values(day).includes(r.id) ? 6 : 0);
+        if (costDiff > 0) score -= (costDiff / 10);
+
+        if (score > maxScore) {
+          maxScore = score;
+          best = r;
+        }
+      }
+      day[slot] = best ? best.id : pool[0].id;
+      if (best) used[best.id] = (used[best.id] || 0) + 1;
+    }
+    plan.push(day);
+  }
+
+  // Ajuste inteligente hacia el presupuesto si se pasa
+  for (let it = 0; it < 60 && calculateGroceries(plan).total > STATE.budget; it++) {
+    let mostExpensive = null;
+    let highestCost = 0;
+    plan.forEach((day, d) => {
+      for (const s in day) {
+        if (day[s] == null) continue;
+        const c = unitCost(R[day[s]]);
+        if (c > highestCost && getCandidates(s).some(r => unitCost(r) < c * 0.85)) {
+          highestCost = c;
+          mostExpensive = [d, s];
+        }
+      }
+    });
+    if (!mostExpensive) break;
+    const [d, s] = mostExpensive;
+    const cur = R[plan[d][s]];
+    const cheaper = getCandidates(s)
+      .filter(r => unitCost(r) < unitCost(cur) * 0.85)
+      .sort((a, b) => unitCost(a) - unitCost(b));
+    if (cheaper.length) plan[d][s] = cheaper[0].id;
+  }
+
+  return plan;
+}
+
+function calculateGroceries(plan) {
+  const need = {};
+  const sv = servings();
+  plan.forEach(day => {
+    for (const s in day) {
+      const id = day[s];
+      if (id == null) continue;
+      const r = R[id];
+      for (const k in r.i) {
+        need[k] = (need[k] || 0) + (r.i[k] * sv);
+      }
+    }
+  });
+
+  const items = [];
+  let total = 0;
+
+  for (const k in need) {
+    if (!I[k]) continue;
+    const [name, aisle, unit, packQty, packPrice, , bulkStep] = I[k];
+    const qty = need[k];
+    let buy, cost, label;
+
+    if (bulkStep) {
+      buy = Math.max(bulkStep, Math.ceil(qty / bulkStep - 1e-9) * bulkStep);
+      cost = (buy / packQty) * packPrice;
+      label = formatQty(buy, unit);
+    } else {
+      const packs = Math.max(1, Math.ceil(qty / packQty - 1e-9));
+      cost = packs * packPrice;
+      label = packQty === 1 ? `${packs} pz` : `${packs} paq (${formatQty(packQty, unit)})`;
+    }
+
+    total += cost;
+    items.push({
+      key: k,
+      name,
+      aisle,
+      label,
+      cost,
+      need: qty,
+      unit
+    });
+  }
+
+  return { items, total };
+}
+
+function formatQty(q, u) {
+  if (u === 'g') return q >= 1000 ? `${+(q / 1000).toFixed(2)} kg` : `${Math.round(q)} g`;
+  if (u === 'ml') return q >= 1000 ? `${+(q / 1000).toFixed(2)} L` : `${Math.round(q)} ml`;
+  return `${+q.toFixed(1)} pz`;
+}
+
+function formatNeed(q, u) {
+  if (u === 'pz') return q < 1 ? '½ pz aprox.' : `${Math.round(q * 2) / 2} pz`;
+  return formatQty(Math.round(q / 5) * 5 || Math.round(q), u);
+}
+
+/* ==========================================================================
+   7. RENDERIZADO DE VISTAS PRINCIPALES
+   ========================================================================== */
+function renderApp() {
+  if (!STATE.plan) STATE.plan = buildWeeklyPlan();
+  const plan = STATE.plan;
+  const { items, total } = calculateGroceries(plan);
+  const slots = activeSlots();
+
+  // Promedios diarios
+  let totalKc = 0, totalPr = 0, totalCh = 0, totalGr = 0, totalFib = 0;
+  plan.forEach(day => {
+    for (const s in day) {
+      if (day[s] != null) {
+        const r = R[day[s]];
+        totalKc += r.kc;
+        totalPr += r.pr;
+        totalCh += r.ch;
+        totalGr += r.gr;
+        totalFib += r.fib;
+      }
+    }
+  });
+  const avgKc = Math.round(totalKc / 7);
+  const avgPr = Math.round(totalPr / 7);
+  const avgCh = Math.round(totalCh / 7);
+  const avgGr = Math.round(totalGr / 7);
+  const avgFib = Math.round(totalFib / 7);
+
+  const costPerServing = total / Math.max(1, servings() * 7 * slots.length);
+  const costPerDay = total / 7;
+  const imcData = calcIMC(STATE.patient.weight, STATE.patient.height);
+  const targetKc = calcTargetCalories();
+  const waterLiters = calcWaterLiters();
+
+  const app = $('#app');
+  let html = '';
+
+  // 1. Header con Selector de Modo (Nutriólogo / Paciente) y Marca
+  html += `
+  <header class="app-header">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div>
+          <div class="brand-title">NutriPlan & Mandado Semanal</div>
+          <div class="brand-subtitle">Herramienta Clínica y Presupuesto Inteligente para la Salud</div>
+        </div>
+      </div>
+
+      <div class="header-tools">
+        <!-- Switcher de Modo -->
+        <div class="mode-toggle">
+          <button class="mode-btn ${STATE.mode === 'patient' ? 'active' : ''}" id="btn-mode-patient">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Modo Paciente
+          </button>
+          <button class="mode-btn clinician ${STATE.mode === 'clinician' ? 'active' : ''}" id="btn-mode-clinician">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Modo Nutriólogo / Médico
+          </button>
+        </div>
+
+        <button class="btn-icon" id="btn-theme-toggle" title="Cambiar tema">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Ficha rápida del Paciente -->
+    <div class="patient-badge-banner">
+      <div class="info-pills">
+        <span><b>Paciente:</b> ${esc(STATE.patient.name)}</span>
+        <span class="pill-badge">${STATE.patient.age} años · ${STATE.patient.weight} kg</span>
+        <span class="pill-badge" style="background:${imcData.color}22; color:${imcData.color}; border-color:${imcData.color}">IMC ${imcData.imc} (${imcData.cat})</span>
+        <span class="pill-badge alert-pill">${CLINICAL_GOALS[STATE.patient.goal].name}</span>
+      </div>
+      <div>
+        <span style="font-size:12.5px; color:var(--fg-muted)">Tratante: <b>${esc(STATE.clinician.name)}</b> (${esc(STATE.clinician.license)})</span>
+      </div>
+    </div>
+  </header>
+  `;
+
+  // Encabezado solo para Impresión Médica
+  html += `
+  <div class="print-only-header">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h1 style="font-size:18pt; margin:0; color:#1e593e;">${esc(STATE.clinician.clinic)}</h1>
+        <p style="margin:2pt 0; font-weight:bold;">${esc(STATE.clinician.name)} · ${esc(STATE.clinician.specialty)}</p>
+        <p style="margin:2pt 0; font-size:10pt;">${esc(STATE.clinician.license)} · Tel: ${esc(STATE.clinician.phone)}</p>
+      </div>
+      <div style="text-align:right;">
+        <h2 style="font-size:14pt; margin:0;">GUÍA NUTRICIONAL Y PLAN SEMANAL</h2>
+        <p style="font-size:10pt; margin:2pt 0;">Fecha: ${new Date().toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' })}</p>
+      </div>
+    </div>
+    <div style="margin-top:10pt; padding:8pt; background:#f0f7f2; border:1px solid #c2e0cd; font-size:10pt;">
+      <b>Paciente:</b> ${esc(STATE.patient.name)} &nbsp;|&nbsp; <b>Edad:</b> ${STATE.patient.age} años &nbsp;|&nbsp; <b>Peso:</b> ${STATE.patient.weight} kg &nbsp;|&nbsp; <b>Estatura:</b> ${STATE.patient.height} cm &nbsp;|&nbsp; <b>IMC:</b> ${imcData.imc} (${imcData.cat}) &nbsp;|&nbsp; <b>Objetivo:</b> ${CLINICAL_GOALS[STATE.patient.goal].name}
+    </div>
+  </div>
+  `;
+
+  // 2. Barra de Navegación de Pestañas
+  html += `
+  <nav class="nav-tabs" role="tablist">
+    <button class="tab-btn ${STATE.tab === 'menu' ? 'active' : ''}" data-tab="menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Menú Semanal
+    </button>
+    <button class="tab-btn ${STATE.tab === 'list' ? 'active' : ''}" data-tab="list">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Lista del Mandado <span class="tab-badge">${items.length}</span>
+    </button>
+    <button class="tab-btn ${STATE.tab === 'budget' ? 'active' : ''}" data-tab="budget">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Presupuesto & Ahorro
+    </button>
+    <button class="tab-btn ${STATE.tab === 'recipes' ? 'active' : ''}" data-tab="recipes">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Recetario Saludable
+    </button>
+    <button class="tab-btn ${STATE.tab === 'clinical' ? 'active' : ''}" data-tab="clinical">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Consulta & Recomendaciones
+    </button>
+    <button class="tab-btn ${STATE.tab === 'config' ? 'active' : ''}" data-tab="config">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Ajustes
+    </button>
+  </nav>
+  `;
+
+  // 3. Barra de Resumen KPI (Presupuesto, Calorías, Proteína, Porciones)
+  const budgetPct = Math.min(100, Math.round((total / STATE.budget) * 100));
+  const isOverBudget = total > STATE.budget;
+
+  html += `
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">
+        <span>Gasto Estimado</span>
+        <span class="pill-badge">${budgetPct}%</span>
+      </div>
+      <div class="kpi-val ${isOverBudget ? 'danger' : 'highlight'}">${money(total)}</div>
+      <div class="kpi-sub">de ${money(STATE.budget)} semanal</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill ${isOverBudget ? 'over' : ''}" style="width:${budgetPct}%"></div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label"><span>Costo / Porción</span><span>🍽️</span></div>
+      <div class="kpi-val">${money(costPerServing)}</div>
+      <div class="kpi-sub">${money(costPerDay)} al día (${servings()} porciones)</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label"><span>Energía Promedio</span><span>🔥</span></div>
+      <div class="kpi-val">${avgKc} <small style="font-size:14px;font-weight:600">kcal/día</small></div>
+      <div class="kpi-sub">Meta clínica: ≈ ${targetKc} kcal</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label"><span>Macronutrientes</span><span>⚖️</span></div>
+      <div class="kpi-val" style="font-size:20px">${avgPr}g P · ${avgCh}g C · ${avgGr}g G</div>
+      <div class="kpi-sub">Fibra: <b>${avgFib}g / día</b> (Meta: >25g)</div>
+    </div>
+  </div>
+  `;
+
+  // 4. Barra de Acciones Rápidas (WhatsApp, Imprimir, Regenerar)
+  html += `
+  <div class="action-bar">
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btn-regen-menu">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        Regenerar Menú
+      </button>
+      <button class="btn btn-whatsapp" id="btn-share-whatsapp">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.4-.13-.57.13-.17.25-.65.81-.8 1-.15.19-.3.21-.55.08-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.12-.15.17-.25.25-.42.08-.17.04-.32-.02-.44-.06-.13-.57-1.37-.78-1.87-.2-.49-.4-.42-.55-.43h-.47c-.16 0-.42.06-.64.3-.22.25-.85.83-.85 2.02 0 1.19.87 2.34.99 2.5.12.17 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.11-.23-.17-.48-.29z"/></svg>
+        Compartir por WhatsApp
+      </button>
+      <button class="btn" id="btn-print-plan">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimir Plan / Guardar PDF
+      </button>
+    </div>
+
+    <div>
+      <span style="font-size:13px; color:var(--fg-muted)">
+        Comensales: <b>${peopleCount()} ${peopleCount() === 1 ? 'persona' : 'personas'}</b> (${servings()} porciones)
+      </span>
+    </div>
+  </div>
+  `;
+
+  // 5. Contenido según pestaña activa
+  if (STATE.tab === 'menu') {
+    html += renderMenuView(plan, slots);
+  } else if (STATE.tab === 'list') {
+    html += renderShoppingView(items);
+  } else if (STATE.tab === 'budget') {
+    html += renderBudgetView(total, items);
+  } else if (STATE.tab === 'recipes') {
+    html += renderRecipesCatalogView();
+  } else if (STATE.tab === 'clinical') {
+    html += renderClinicalView(imcData, targetKc, waterLiters, avgKc, avgPr, avgCh, avgGr, avgFib);
+  } else if (STATE.tab === 'config') {
+    html += renderConfigView();
+  }
+
+  // Footer con aclaración médica
+  html += `
+  <footer style="margin-top:40px; padding-top:16px; border-top:1px solid var(--line); font-size:12.5px; color:var(--fg-muted); text-align:center;">
+    <p>NutriPlan & Mandado Semanal · Diseñado para consulta de Lic. en Nutrición y Médicos. Los precios son ejemplos editables. Esta herramienta no sustituye una valoración médica integral.</p>
+  </footer>
+  `;
+
+  app.innerHTML = html;
+  bindEventListeners(items);
+}
+
+/* ==========================================================================
+   8. VISTAS ESPECÍFICAS
+   ========================================================================== */
+function renderMenuView(plan, slots) {
+  let h = `<div class="week-grid">`;
+  plan.forEach((day, d) => {
+    let dayKc = 0, dayPr = 0;
+    for (const s in day) {
+      if (day[s] != null) {
+        dayKc += R[day[s]].kc;
+        dayPr += R[day[s]].pr;
+      }
+    }
+    h += `
+    <div class="day-card">
+      <div class="day-header">
+        <div class="day-name">${DAYS[d]}</div>
+        <div class="day-macros">${dayKc} kcal · ${dayPr}g P</div>
+      </div>
+      <div class="meals-list">
+    `;
+
+    slots.forEach(slot => {
+      const recId = day[slot];
+      const r = recId != null ? R[recId] : null;
+      h += `
+      <div class="meal-slot-item">
+        <div>
+          <div class="meal-type-label">${SLOT_NAMES[slot]}</div>
+          ${r ? `
+            <button class="meal-title-btn" data-open-rec="${r.id}">${esc(r.n)}</button>
+            <div class="meal-meta-pills">
+              <span class="meta-pill">${r.kc} kcal</span>
+              <span class="meta-pill">${r.pr}g proteína</span>
+              <span class="meta-pill p-cost">≈ ${money(unitCost(r) * servings())}</span>
+              ${r.time ? `<span class="meta-pill">⏱️ ${r.time}</span>` : ''}
+            </div>
+          ` : `<span style="font-size:13px;color:var(--fg-muted)">Sin receta compatible; revisa tus ajustes</span>`}
+        </div>
+        <div class="meal-actions-group">
+          ${r ? `
+            <button class="btn-swap" data-swap-slot="${d}|${slot}" title="Cambiar por otra receta">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 9h13l-4-4M20 15H7l4 4"/></svg>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+      `;
+    });
+
+    h += `</div></div>`;
+  });
+  h += `</div>`;
+  return h;
+}
+
+function renderShoppingView(items) {
+  const groups = {};
+  items.forEach(it => {
+    groups[it.aisle] = groups[it.aisle] || [];
+    groups[it.aisle].push(it);
+  });
+
+  const gotCount = items.filter(it => STATE.got[it.key]).length;
+
+  let h = `
+  <div class="card-panel" style="margin-bottom:16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div>
+        <div style="font-size:18px; font-weight:800; font-family:var(--font-display);">Lista Organizada para el Supermercado</div>
+        <div style="font-size:13px; color:var(--fg-muted);">
+          <b>${gotCount} de ${items.length} productos en el carrito</b> · Cantidades optimizadas para ${peopleCount()} personas
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-sm" id="btn-copy-list">Copiar Lista de Texto</button>
+        <button class="btn btn-sm" id="btn-clear-checks">Desmarcar Todos</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="shopping-container">
+  `;
+
+  for (const a in AISLES) {
+    if (!groups[a] || !groups[a].length) continue;
+    const aisleGroup = groups[a].sort((x, y) => x.name.localeCompare(y.name));
+    const aisleSubtotal = aisleGroup.reduce((s, it) => s + it.cost, 0);
+
+    h += `
+    <div class="aisle-card">
+      <div class="aisle-header">
+        <div class="aisle-title-wrap">
+          <div class="aisle-icon">${AISLES[a].icon}</div>
+          <div class="aisle-title">${AISLES[a].name}</div>
+        </div>
+        <div class="aisle-subtotal">${money(aisleSubtotal)}</div>
+      </div>
+
+      <div class="grocery-items-list">
+        ${aisleGroup.map(it => {
+          const isGot = !!STATE.got[it.key];
+          return `
+          <label class="grocery-item-row ${isGot ? 'checked' : ''}">
+            <input type="checkbox" data-check-item="${it.key}" ${isGot ? 'checked' : ''}>
+            <div>
+              <div class="g-name">${esc(it.name)}</div>
+              <div class="g-qty">Comprar: <b>${it.label}</b> · receta pide ${formatNeed(it.need, it.unit)}</div>
+            </div>
+            <div class="g-cost">${money(it.cost)}</div>
+          </label>
+          `;
+        }).join('')}
+      </div>
+    </div>
+    `;
+  }
+
+  h += `</div>`;
+  return h;
+}
+
+function renderBudgetView(total, items) {
+  const over = total > STATE.budget;
+  const diff = Math.abs(STATE.budget - total);
+
+  return `
+  <div class="clinical-grid">
+    <div>
+      <div class="card-panel">
+        <div class="panel-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Control y Ajuste del Presupuesto
+        </div>
+        <p style="font-size:13.5px; color:var(--fg-muted); margin-bottom:16px;">
+          Mueve la barra para fijar tu meta de gasto semanal. El menú se adapta automáticamente reemplazando recetas costosas por opciones nutritivas de menor costo.
+        </p>
+
+        <div style="text-align:center; padding:16px 0;">
+          <div style="font-family:var(--font-display); font-size:48px; font-weight:800; color:var(--primary);">${money(STATE.budget)}</div>
+          <div style="font-size:13px; color:var(--fg-muted)">Meta semanal de mandado</div>
+        </div>
+
+        <div class="form-group">
+          <label for="budget-slider">Monto en Pesos Mexicanos (MXN):</label>
+          <input type="range" id="budget-slider" min="500" max="3500" step="50" value="${STATE.budget}" style="width:100%; height:28px; accent-color:var(--primary);">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--fg-muted); margin-top:4px;">
+            <span>$500 (Muy económico)</span>
+            <span>$2,000 (Holgado)</span>
+            <span>$3,500</span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; padding:12px; border-radius:var(--radius-md); background:${over ? 'var(--danger-light)' : 'var(--success-light)'}; color:${over ? 'var(--danger)' : 'var(--success)'}; font-size:13.5px; font-weight:600;">
+          ${over ? `
+            ⚠️ El costo actual (${money(total)}) excede el presupuesto por ${money(diff)}. Puedes desactivar un snack o cambiar platillos de carne por opciones de atún, huevo o legumbres.
+          ` : `
+            ✅ ¡Excelente! Tienes ${money(diff)} libres para gastos imprevistos, especias de despensa, té o café de grano.
+          `}
+        </div>
+      </div>
+
+      <div class="card-panel">
+        <div class="panel-title">Distribución del Gasto por Pasillo</div>
+        ${Object.keys(AISLES).map(a => {
+          const aisleItems = items.filter(it => it.aisle === a);
+          const aisleSum = aisleItems.reduce((s, it) => s + it.cost, 0);
+          const pct = total > 0 ? Math.round((aisleSum / total) * 100) : 0;
+          if (aisleSum === 0) return '';
+          return `
+          <div style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+              <span>${AISLES[a].icon} <b>${AISLES[a].name}</b></span>
+              <span><b>${money(aisleSum)}</b> (${pct}%)</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:${pct}%;"></div>
+            </div>
+          </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div>
+      <div class="card-panel">
+        <div class="panel-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Estrategias de Ahorro del Nutriólogo
+        </div>
+
+        <div class="saving-tip-card">
+          <div class="saving-tip-title">1. Proteína inteligente: Huevo, Lenteja y Atún</div>
+          <p style="font-size:13px; color:var(--fg-muted);">
+            El kilo de bistec de res cuesta ≈ $215 pesos, mientras que el kilo de lentejas cuesta $60 (rinde 2.5 kg cocido) y la cartera de huevo rinde 18 porciones por $62. Sustituir 2 comidas a la semana ahorra hasta $250 pesos mensuales.
+          </p>
+        </div>
+
+        <div class="saving-tip-card">
+          <div class="saving-tip-title">2. Aprovechamiento del Nopal y Calabacita</div>
+          <p style="font-size:13px; color:var(--fg-muted);">
+            Agregar nopales asados a la carne molida o a la tinga duplica el volumen del guisado sin elevar las calorías, agregando fibra soluble benéfica para la glucosa.
+          </p>
+        </div>
+
+        <div class="saving-tip-card">
+          <div class="saving-tip-title">3. Compra a granel vs empaque cerrado</div>
+          <p style="font-size:13px; color:var(--fg-muted);">
+            La avena, frijoles y arroz en bolsa de 1 kg en el pasillo de granos son hasta 45% más baratos que los cereales de caja o empaques "fitness" con azúcar encubierta.
+          </p>
+        </div>
+
+        <div class="saving-tip-card">
+          <div class="saving-tip-title">4. Frutas y verduras de temporada</div>
+          <p style="font-size:13px; color:var(--fg-muted);">
+            El plátano, la papaya, la manzana nacional y el jitomate guaje mantienen precios estables todo el año. Evita frutos rojos importados fuera de época; usa fresas congeladas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function renderRecipesCatalogView() {
+  return `
+  <div class="card-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+      <div>
+        <div class="panel-title" style="margin-bottom:2px;">Recetario Clínico & Familiar</div>
+        <div style="font-size:13px; color:var(--fg-muted);">Catálogo con ${R.length} platillos saludables con porciones, macros y tips clínicos.</div>
+      </div>
+      <div>
+        <span class="pill-badge" style="background:var(--primary-light); color:var(--primary);">Ajustado a porciones para ${servings()} personas</span>
+      </div>
+    </div>
+
+    <div class="catalog-toolbar">
+      <div class="search-input-wrap">
+        <span class="search-icon-pos">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <input type="search" class="form-control" id="recipe-search-input" placeholder="Buscar por ingrediente (pollo, avena, nopal, atún)...">
+      </div>
+      <select class="form-control" id="recipe-slot-filter" style="width:auto;">
+        <option value="all">Todos los tiempos</option>
+        <option value="des">Desayunos</option>
+        <option value="alm">Comidas</option>
+        <option value="cen">Cenas</option>
+        <option value="snack">Snacks</option>
+      </select>
+      <select class="form-control" id="recipe-clin-filter" style="width:auto;">
+        <option value="all">Todas las condiciones clínicas</option>
+        <option value="dm2">Diabetes / Glucosa</option>
+        <option value="hta">Hipertensión / DASH</option>
+        <option value="deficit">Pérdida de Grasa</option>
+        <option value="hiper">Hipertrofia</option>
+        <option value="digestivo">Digestión ligera</option>
+      </select>
+    </div>
+
+    <div class="recipe-cards-grid" id="recipe-cards-container">
+      ${renderRecipeCardList(R)}
+    </div>
+  </div>
+  `;
+}
+
+function renderRecipeCardList(list) {
+  if (!list.length) {
+    return `<div style="grid-column:1/-1; text-align:center; padding:32px; color:var(--fg-muted);">No se encontraron recetas con los filtros seleccionados.</div>`;
+  }
+  return list.map(r => `
+    <div class="recipe-card-single">
+      <div class="recipe-card-body">
+        <div>
+          <div class="recipe-tags">
+            ${r.s.map(s => `<span class="tag-badge">${SLOT_NAMES[s] || s}</span>`).join('')}
+            ${r.clin ? r.clin.map(c => `<span class="tag-badge clin-${c}">${c.toUpperCase()}</span>`).join('') : ''}
+          </div>
+          <div class="recipe-card-title">${esc(r.n)}</div>
+          <div class="recipe-quick-macros">
+            <div><b>${r.kc}</b>kcal</div>
+            <div><b>${r.pr}g</b>Prot</div>
+            <div><b>${r.ch}g</b>Carb</div>
+            <div><b>${r.fib}g</b>Fibra</div>
+          </div>
+        </div>
+
+        <div>
+          <button class="btn btn-sm btn-primary" style="width:100%;" data-open-rec="${r.id}">
+            Ver Ingredientes y Preparación
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderClinicalView(imcData, targetKc, waterLiters, avgKc, avgPr, avgCh, avgGr, avgFib) {
+  return `
+  <div class="clinical-grid">
+    <!-- Columna Izquierda: Ficha y Diagnóstico -->
+    <div>
+      <div class="card-panel">
+        <div class="panel-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Expediente Clínico del Paciente
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="p-name">Nombre Completo:</label>
+            <input type="text" class="form-control" id="p-name" value="${esc(STATE.patient.name)}">
+          </div>
+          <div class="form-group">
+            <label for="p-age">Edad (años):</label>
+            <input type="number" class="form-control" id="p-age" value="${STATE.patient.age}">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="p-weight">Peso Actual (kg):</label>
+            <input type="number" step="0.5" class="form-control" id="p-weight" value="${STATE.patient.weight}">
+          </div>
+          <div class="form-group">
+            <label for="p-height">Estatura (cm):</label>
+            <input type="number" class="form-control" id="p-height" value="${STATE.patient.height}">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="p-goal">Diagnóstico / Objetivo Terapéutico:</label>
+          <select class="form-control" id="p-goal">
+            ${Object.keys(CLINICAL_GOALS).map(k => `
+              <option value="${k}" ${STATE.patient.goal === k ? 'selected' : ''}>${CLINICAL_GOALS[k].name}</option>
+            `).join('')}
+          </select>
+          <div style="font-size:12px; color:var(--fg-muted); margin-top:4px;">
+            ${CLINICAL_GOALS[STATE.patient.goal].desc}
+          </div>
+        </div>
+
+        <!-- IMC y Cálculo Hídrico -->
+        <div class="imc-calculator-box">
+          <div>
+            <div style="font-size:11.5px; text-transform:uppercase; font-weight:700; color:var(--fg-muted)">Índice de Masa Corporal (IMC)</div>
+            <div style="font-size:24px; font-weight:800; font-family:var(--font-display);">${imcData.imc} kg/m²</div>
+          </div>
+          <div>
+            <span class="imc-badge" style="background:${imcData.color}22; color:${imcData.color}; border:1px solid ${imcData.color};">
+              ${imcData.cat}
+            </span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+          <div style="background:var(--surface-2); padding:10px; border-radius:var(--radius-md); text-align:center;">
+            <div style="font-size:11.5px; color:var(--fg-muted)">Meta Hídrica Diaria</div>
+            <div style="font-size:18px; font-weight:800; color:var(--primary);">${waterLiters} Litros</div>
+            <div style="font-size:11px; color:var(--fg-muted)">35 ml / kg de peso</div>
+          </div>
+          <div style="background:var(--surface-2); padding:10px; border-radius:var(--radius-md); text-align:center;">
+            <div style="font-size:11.5px; color:var(--fg-muted)">Calorías Objetivo</div>
+            <div style="font-size:18px; font-weight:800; color:var(--primary);">${targetKc} kcal</div>
+            <div style="font-size:11px; color:var(--fg-muted)">Plan actual: ≈ ${avgKc} kcal</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Datos del Profesional -->
+      <div class="card-panel">
+        <div class="panel-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Datos del Profesional Tratante
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="c-name">Nutriólogo / Médico:</label>
+            <input type="text" class="form-control" id="c-name" value="${esc(STATE.clinician.name)}">
+          </div>
+          <div class="form-group">
+            <label for="c-license">Cédula Profesional:</label>
+            <input type="text" class="form-control" id="c-license" value="${esc(STATE.clinician.license)}">
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="c-clinic">Clínica / Consultorio:</label>
+            <input type="text" class="form-control" id="c-clinic" value="${esc(STATE.clinician.clinic)}">
+          </div>
+          <div class="form-group">
+            <label for="c-phone">Teléfono / WhatsApp:</label>
+            <input type="text" class="form-control" id="c-phone" value="${esc(STATE.clinician.phone)}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Pautas Clínicas e Indicaciones -->
+    <div>
+      <div class="card-panel">
+        <div class="panel-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Pautas Nutricionales Clave para el Paciente
+        </div>
+
+        <!-- Plato del Bien Comer Visual -->
+        <div class="bien-comer-box">
+          <div style="font-weight:800; font-size:14px; color:var(--primary);">Guía Visual: Distribución del Plato del Bien Comer</div>
+          <div class="bien-comer-bars">
+            <div class="bc-ver" title="50% Verduras y Frutas"></div>
+            <div class="bc-pro" title="25% Proteína Magra"></div>
+            <div class="bc-cer" title="25% Granos y Tubérculos"></div>
+          </div>
+          <div class="bc-legend">
+            <span class="leg-ver">50% Verduras & Frutas frescas</span>
+            <span class="leg-pro">25% Proteína magra</span>
+            <span class="leg-cer">25% Cereales integrales</span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <label style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--fg-muted); display:block; margin-bottom:8px;">
+            Recomendaciones para Imprimir en el Plan:
+          </label>
+          <div class="checklist-wrap">
+            ${CLINICAL_TIPS_PRESETS.map(t => {
+              const checked = STATE.activeTips.includes(t.id);
+              return `
+              <label class="checklist-item">
+                <input type="checkbox" data-tip-id="${t.id}" ${checked ? 'checked' : ''}>
+                <span>${t.text}</span>
+              </label>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:16px;">
+          <label for="c-notes">Notas Específicas de la Consulta:</label>
+          <textarea class="form-control" id="c-notes" rows="4" placeholder="Indicaciones personalizadas para el paciente...">${esc(STATE.clinician.notes)}</textarea>
+        </div>
+
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary" style="width:100%;" id="btn-save-clinical">
+            Guardar Cambios Clínicos
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function renderConfigView() {
+  return `
+  <div class="card-panel" style="max-width:760px; margin:0 auto;">
+    <div class="panel-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Configuración del Hogar y Preferencias de Dieta
+    </div>
+
+    <!-- Personas en el Hogar -->
+    <div style="margin-bottom:20px;">
+      <label style="font-weight:700; font-size:13px; text-transform:uppercase; color:var(--fg-muted);">Número de Adultos y Niños:</label>
+      <div style="display:flex; gap:16px; align-items:center; margin-top:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-sm" id="btn-adult-minus">−</button>
+          <span style="font-weight:800; font-size:18px; min-width:24px; text-align:center;">${STATE.adults}</span>
+          <button class="btn btn-sm" id="btn-adult-plus">+</button>
+          <span style="font-size:13px; color:var(--fg-muted)">Adultos</span>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-sm" id="btn-kid-minus">−</button>
+          <span style="font-weight:800; font-size:18px; min-width:24px; text-align:center;">${STATE.kids}</span>
+          <button class="btn btn-sm" id="btn-kid-plus">+</button>
+          <span style="font-size:13px; color:var(--fg-muted)">Niños (estimación de compra: 0.6)</span>
+        </div>
+      </div>
+      <div style="font-size:12.5px; color:var(--fg-muted); margin-top:6px;">
+        Total: <b>${servings()} porciones</b> calculadas por platillo.
+      </div>
+    </div>
+
+    <!-- Comidas que se Planean -->
+    <div style="margin-bottom:20px;">
+      <label style="font-weight:700; font-size:13px; text-transform:uppercase; color:var(--fg-muted);">Tiempos de Comida a Planear:</label>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+        ${[['des','Desayuno'],['sm','Colación matutina'],['alm','Comida'],['st','Colación vespertina'],['cen','Cena']].map(([k, lbl]) => `
+          <button class="btn btn-sm ${STATE.meals[k] ? 'btn-primary' : ''}" data-toggle-meal="${k}">
+            ${STATE.meals[k] ? '✓ ' : ''}${lbl}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Restricciones de Dieta -->
+    <div style="margin-bottom:20px;">
+      <label style="font-weight:700; font-size:13px; text-transform:uppercase; color:var(--fg-muted);">Restricciones de Dieta:</label>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+        ${[
+          ['none', 'Sin Restricción'],
+          ['veg', 'Vegetariano'],
+          ['vegan', 'Vegano'],
+          ['pesc', 'Pescetariano']
+        ].map(([val, lbl]) => `
+          <button class="btn btn-sm ${STATE.diet === val ? 'btn-primary' : ''}" data-set-diet="${val}">
+            ${lbl}
+          </button>
+        `).join('')}
+        <button class="btn btn-sm ${STATE.lowcarb ? 'btn-primary' : ''}" id="btn-toggle-lowcarb">
+          ${STATE.lowcarb ? '✓ ' : ''}Bajo en Carbohidratos (Comida y Cena)
+        </button>
+      </div>
+    </div>
+
+    <!-- Ingredientes a Excluir -->
+    <div style="margin-bottom:20px;">
+      <label style="font-weight:700; font-size:13px; text-transform:uppercase; color:var(--fg-muted);">Ingredientes Excluidos / Alergias:</label>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;">
+        ${STATE.excl.length ? STATE.excl.map(k => `
+          <button class="tag-badge" style="background:var(--danger-light); color:var(--danger); font-size:12px; padding:4px 10px;" data-remove-excl="${k}">
+            ${esc(I[k] ? I[k][0] : k)} ×
+          </button>
+        `).join('') : `<span style="font-size:13px; color:var(--fg-muted)">Ninguno excluido.</span>`}
+      </div>
+      <div style="display:flex; gap:8px; max-width:380px;">
+        <select class="form-control" id="select-add-excl">
+          <option value="">Selecciona ingrediente a excluir...</option>
+          ${Object.keys(I).filter(k => !STATE.excl.includes(k)).sort().map(k => `
+            <option value="${k}">${esc(I[k][0])}</option>
+          `).join('')}
+        </select>
+        <button class="btn btn-sm" id="btn-add-excl">Excluir</button>
+      </div>
+    </div>
+
+    <div style="padding-top:16px; border-top:1px solid var(--line); display:flex; justify-content:space-between;">
+      <button class="btn btn-primary" id="btn-save-config">Guardar y Regenerar Menú</button>
+      <button class="btn" id="btn-reset-default">Restablecer Valores</button>
+    </div>
+  </div>
+  `;
+}
+
+/* ==========================================================================
+   9. MODALES Y DIÁLOGOS INTERACTIVOS
+   ========================================================================== */
+function openRecipeModal(recId) {
+  const r = R[recId];
+  if (!r) return;
+  const sv = servings();
+  const root = $('#modal-root');
+
+  root.innerHTML = `
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <div style="font-size:12px; font-weight:800; text-transform:uppercase; color:var(--primary); letter-spacing:0.04em;">
+            ${r.s.map(s => SLOT_NAMES[s]).join(' · ')} · ${r.time ? `⏱️ ${r.time}` : ''}
+          </div>
+          <div class="modal-title" style="margin-top:4px;">${esc(r.n)}</div>
+        </div>
+        <button class="close-btn" id="modal-close">&times;</button>
+      </div>
+
+      <!-- Macros -->
+      <div class="recipe-quick-macros" style="margin-bottom:16px;">
+        <div><b>${r.kc}</b>kcal</div>
+        <div><b>${r.pr}g</b>Proteína</div>
+        <div><b>${r.ch}g</b>Carbohidratos</div>
+        <div><b>${r.gr}g</b>Grasas</div>
+      </div>
+
+      <!-- Ingredientes -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:var(--fg-muted); margin-bottom:6px;">
+          Ingredientes (Calculados para ${sv} porciones):
+        </div>
+        <ul style="padding-left:18px; font-size:14px; line-height:1.6;">
+          ${Object.keys(r.i).map(k => {
+            const item = I[k];
+            if (!item) return '';
+            return `<li><b>${formatNeed(r.i[k] * sv, item[2])}</b> de ${esc(item[0])}</li>`;
+          }).join('')}
+        </ul>
+      </div>
+
+      <!-- Preparación -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:800; text-transform:uppercase; color:var(--fg-muted); margin-bottom:6px;">
+          Preparación Paso a Paso:
+        </div>
+        <p style="font-size:14px; line-height:1.5; color:var(--fg); background:var(--surface-2); padding:12px; border-radius:var(--radius-md);">
+          ${esc(r.p)}
+        </p>
+      </div>
+
+      <!-- Tips Clínicos y de Ahorro -->
+      ${r.nutriTip ? `
+        <div style="padding:10px 14px; background:var(--primary-light); border-left:4px solid var(--primary); border-radius:var(--radius-sm); font-size:13px; margin-bottom:10px;">
+          <b>🩺 Tip del Nutriólogo:</b> ${esc(r.nutriTip)}
+        </div>
+      ` : ''}
+
+      ${r.saveTip ? `
+        <div style="padding:10px 14px; background:var(--amber-light); border-left:4px solid var(--amber); border-radius:var(--radius-sm); font-size:13px;">
+          <b>💰 Tip de Ahorro:</b> ${esc(r.saveTip)}
+        </div>
+      ` : ''}
+
+      <div style="margin-top:20px; text-align:right;">
+        <button class="btn btn-primary" id="modal-close-btn">Entendido</button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  const close = () => { root.innerHTML = ''; };
+  $('#modal-close').onclick = close;
+  $('#modal-close-btn').onclick = close;
+  $('#modal-overlay').onclick = e => { if (e.target.id === 'modal-overlay') close(); };
+}
+
+function openSwapModal(dayIdx, slotKey) {
+  const curId = STATE.plan[dayIdx][slotKey];
+  const pool = getCandidates(slotKey);
+  const root = $('#modal-root');
+
+  root.innerHTML = `
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <div style="font-size:12px; font-weight:800; text-transform:uppercase; color:var(--primary);">
+            Cambiar platillo para el ${DAYS[dayIdx]} · ${SLOT_NAMES[slotKey]}
+          </div>
+          <div class="modal-title" style="margin-top:4px;">Alternativas según tus preferencias</div>
+        </div>
+        <button class="close-btn" id="modal-close">&times;</button>
+      </div>
+
+      <div style="max-height:60vh; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+        ${pool.map(r => {
+          const isCur = r.id === curId;
+          return `
+          <div style="padding:12px; border:1px solid ${isCur ? 'var(--primary)' : 'var(--line)'}; background:${isCur ? 'var(--primary-light)' : 'var(--surface)'}; border-radius:var(--radius-md); display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div>
+              <div style="font-weight:700; font-size:14.5px;">${esc(r.n)}</div>
+              <div style="font-size:12px; color:var(--fg-muted); margin-top:2px;">
+                ${r.kc} kcal · ${r.pr}g Prot · ≈ ${money(unitCost(r) * servings())} por comida
+              </div>
+            </div>
+            <div>
+              ${isCur ? `
+                <span class="pill-badge" style="background:var(--primary); color:#fff;">Actual</span>
+              ` : `
+                <button class="btn btn-sm btn-primary" data-select-swap="${r.id}">Elegir</button>
+              `}
+            </div>
+          </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+  `;
+
+  const close = () => { root.innerHTML = ''; };
+  $('#modal-close').onclick = close;
+  $('#modal-overlay').onclick = e => { if (e.target.id === 'modal-overlay') close(); };
+
+  $$('[data-select-swap]').forEach(btn => {
+    btn.onclick = () => {
+      const newId = +btn.dataset.selectSwap;
+      STATE.plan[dayIdx][slotKey] = newId;
+      saveState();
+      close();
+      renderApp();
+      showToast(`Platillo cambiado por: ${R[newId].n}`);
+    };
+  });
+}
+
+function showToast(msg) {
+  const root = $('#toast-root');
+  const d = document.createElement('div');
+  d.className = 'toast-msg';
+  d.innerHTML = `<span>✓</span><span>${esc(msg)}</span>`;
+  root.appendChild(d);
+  setTimeout(() => d.remove(), 2600);
+}
+
+/* ==========================================================================
+   10. VINCULACIÓN DE EVENTOS (EVENT LISTENERS)
+   ========================================================================== */
+function bindEventListeners(items) {
+  // Cambio de pestaña
+  $$('[data-tab]').forEach(btn => {
+    btn.onclick = () => {
+      STATE.tab = btn.dataset.tab;
+      saveState();
+      renderApp();
+      window.scrollTo(0, 0);
+    };
+  });
+
+  // Switch de Modo (Nutriólogo / Paciente)
+  if ($('#btn-mode-patient')) {
+    $('#btn-mode-patient').onclick = () => {
+      STATE.mode = 'patient';
+      saveState();
+      renderApp();
+      showToast('Cambiado a Modo Paciente');
+    };
+  }
+  if ($('#btn-mode-clinician')) {
+    $('#btn-mode-clinician').onclick = () => {
+      STATE.mode = 'clinician';
+      STATE.tab = 'clinical';
+      saveState();
+      renderApp();
+      showToast('Cambiado a Modo Nutriólogo / Médico');
+    };
+  }
+
+  // Toggle Tema Oscuro/Claro
+  if ($('#btn-theme-toggle')) {
+    $('#btn-theme-toggle').onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme_pref', next);
+    };
+  }
+
+  // Regenerar menú
+  if ($('#btn-regen-menu')) {
+    $('#btn-regen-menu').onclick = () => {
+      STATE.seed = (STATE.seed * 48271 + 11) % 2147483647;
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+      showToast('Nuevo menú semanal generado con éxito');
+    };
+  }
+
+  // Imprimir / PDF
+  if ($('#btn-print-plan')) {
+    $('#btn-print-plan').onclick = () => {
+      window.print();
+    };
+  }
+
+  // Compartir por WhatsApp
+  if ($('#btn-share-whatsapp')) {
+    $('#btn-share-whatsapp').onclick = () => {
+      const slots = activeSlots();
+      let text = `🥦 *PLAN NUTRICIONAL SEMANAL Y MANDADO*\n`;
+      text += `👤 *Paciente:* ${STATE.patient.name} (${STATE.patient.weight} kg)\n`;
+      text += `🩺 *Especialista:* ${STATE.clinician.name} (${STATE.clinician.license})\n`;
+      text += `🎯 *Objetivo:* ${CLINICAL_GOALS[STATE.patient.goal].name}\n\n`;
+
+      text += `📅 *MENÚ DE LA SEMANA*\n`;
+      STATE.plan.forEach((day, d) => {
+        text += `\n*${DAYS[d]}:*\n`;
+        slots.forEach(s => {
+          const recId = day[s];
+          if (recId != null) {
+            text += `• ${SLOT_NAMES[s]}: ${R[recId].n} (${R[recId].kc} kcal)\n`;
+          }
+        });
+      });
+
+      text += `\n🛒 *LISTA RESUMIDA DEL MANDADO*\n`;
+      text += `Presupuesto estimado: ${money(calculateGroceries(STATE.plan).total)}\n`;
+      items.slice(0, 15).forEach(it => {
+        text += `• ${it.name}: ${it.label}\n`;
+      });
+      if (items.length > 15) {
+        text += `... y ${items.length - 15} productos más.\n`;
+      }
+
+      text += `\n💧 *Meta de agua diaria:* ${calcWaterLiters()} L\n`;
+      text += `¡Mucho éxito con tu alimentación saludable! 🌱`;
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    };
+  }
+
+  // Modal de Receta
+  $$('[data-open-rec]').forEach(btn => {
+    btn.onclick = () => openRecipeModal(+btn.dataset.openRec);
+  });
+
+  // Modal de Swap
+  $$('[data-swap-slot]').forEach(btn => {
+    btn.onclick = () => {
+      const [d, s] = btn.dataset.swapSlot.split('|');
+      openSwapModal(+d, s);
+    };
+  });
+
+  // Checkbox de la lista del mandado
+  $$('[data-check-item]').forEach(cb => {
+    cb.onchange = () => {
+      STATE.got[cb.dataset.checkItem] = cb.checked;
+      saveState();
+      // Solo actualizamos clases visuales para no re-renderizar todo
+      cb.closest('.grocery-item-row').classList.toggle('checked', cb.checked);
+    };
+  });
+
+  // Copiar lista
+  if ($('#btn-copy-list')) {
+    $('#btn-copy-list').onclick = () => {
+      let txt = `LISTA DEL MANDADO SEMANAL (${money(calculateGroceries(STATE.plan).total)})\n\n`;
+      items.forEach(it => {
+        txt += `- [ ] ${it.name}: ${it.label} (${money(it.cost)})\n`;
+      });
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast('Lista copiada al portapapeles');
+      });
+    };
+  }
+
+  // Desmarcar todo
+  if ($('#btn-clear-checks')) {
+    $('#btn-clear-checks').onclick = () => {
+      STATE.got = {};
+      saveState();
+      renderApp();
+      showToast('Lista desmarcada');
+    };
+  }
+
+  // Slider de Presupuesto
+  if ($('#budget-slider')) {
+    $('#budget-slider').oninput = e => {
+      STATE.budget = +e.target.value;
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+    };
+  }
+
+  // Buscador y filtros de recetas
+  if ($('#recipe-search-input')) {
+    const filterRecipes = () => {
+      const query = ($('#recipe-search-input').value || '').toLowerCase().trim();
+      const slotFilter = $('#recipe-slot-filter').value;
+      const clinFilter = $('#recipe-clin-filter').value;
+
+      const filtered = R.filter(r => {
+        const matchesQuery = !query || r.n.toLowerCase().includes(query) || Object.keys(r.i).some(k => I[k] && I[k][0].toLowerCase().includes(query));
+        const matchesSlot = slotFilter === 'all' || (slotFilter === 'snack' ? (r.s.includes('sm') || r.s.includes('st') || r.s.includes('sd') || r.s.includes('ss')) : r.s.includes(slotFilter));
+        const matchesClin = clinFilter === 'all' || (r.clin && r.clin.includes(clinFilter));
+        return matchesQuery && matchesSlot && matchesClin;
+      });
+
+      $('#recipe-cards-container').innerHTML = renderRecipeCardList(filtered);
+      // Re-vincular botones de recetas
+      $$('#recipe-cards-container [data-open-rec]').forEach(b => {
+        b.onclick = () => openRecipeModal(+b.dataset.openRec);
+      });
+    };
+
+    $('#recipe-search-input').oninput = filterRecipes;
+    $('#recipe-slot-filter').onchange = filterRecipes;
+    $('#recipe-clin-filter').onchange = filterRecipes;
+  }
+
+  // Guardar Cambios Clínicos
+  if ($('#btn-save-clinical')) {
+    $('#btn-save-clinical').onclick = () => {
+      STATE.patient.name = $('#p-name').value;
+      STATE.patient.age = +$('#p-age').value;
+      STATE.patient.weight = +$('#p-weight').value;
+      STATE.patient.height = +$('#p-height').value;
+      STATE.patient.goal = $('#p-goal').value;
+
+      STATE.clinician.name = $('#c-name').value;
+      STATE.clinician.license = $('#c-license').value;
+      STATE.clinician.clinic = $('#c-clinic').value;
+      STATE.clinician.phone = $('#c-phone').value;
+      STATE.clinician.notes = $('#c-notes').value;
+
+      // Pautas activas
+      STATE.activeTips = [];
+      $$('[data-tip-id]').forEach(cb => {
+        if (cb.checked) STATE.activeTips.push(cb.dataset.tipId);
+      });
+
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+      showToast('Datos clínicos y metas actualizadas');
+    };
+  }
+
+  // Ajustes de Comensales
+  if ($('#btn-adult-minus')) {
+    $('#btn-adult-minus').onclick = () => {
+      STATE.adults = Math.max(1, STATE.adults - 1);
+      saveState();
+      renderApp();
+    };
+    $('#btn-adult-plus').onclick = () => {
+      STATE.adults = Math.min(10, STATE.adults + 1);
+      saveState();
+      renderApp();
+    };
+  }
+  if ($('#btn-kid-minus')) {
+    $('#btn-kid-minus').onclick = () => {
+      STATE.kids = Math.max(0, STATE.kids - 1);
+      STATE.hasKids = STATE.kids > 0;
+      saveState();
+      renderApp();
+    };
+    $('#btn-kid-plus').onclick = () => {
+      STATE.kids = Math.min(8, STATE.kids + 1);
+      STATE.hasKids = true;
+      saveState();
+      renderApp();
+    };
+  }
+
+  // Tiempos de comida en Config
+  $$('[data-toggle-meal]').forEach(btn => {
+    btn.onclick = () => {
+      const k = btn.dataset.toggleMeal;
+      STATE.meals[k] = !STATE.meals[k];
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+    };
+  });
+
+  // Dieta en Config
+  $$('[data-set-diet]').forEach(btn => {
+    btn.onclick = () => {
+      STATE.diet = btn.dataset.setDiet;
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+    };
+  });
+
+  if ($('#btn-toggle-lowcarb')) {
+    $('#btn-toggle-lowcarb').onclick = () => {
+      STATE.lowcarb = !STATE.lowcarb;
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+    };
+  }
+
+  // Agregar / Quitar exclusiones
+  if ($('#btn-add-excl')) {
+    $('#btn-add-excl').onclick = () => {
+      const val = $('#select-add-excl').value;
+      if (val && !STATE.excl.includes(val)) {
+        STATE.excl.push(val);
+        STATE.plan = buildWeeklyPlan();
+        saveState();
+        renderApp();
+        showToast(`Ingrediente ${I[val][0]} excluido`);
+      }
+    };
+  }
+
+  $$('[data-remove-excl]').forEach(btn => {
+    btn.onclick = () => {
+      const k = btn.dataset.removeExcl;
+      STATE.excl = STATE.excl.filter(x => x !== k);
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+    };
+  });
+
+  if ($('#btn-save-config')) {
+    $('#btn-save-config').onclick = () => {
+      STATE.plan = buildWeeklyPlan();
+      saveState();
+      renderApp();
+      showToast('Configuración guardada y menú regenerado');
+    };
+  }
+
+  if ($('#btn-reset-default')) {
+    $('#btn-reset-default').onclick = () => {
+      if (confirm('¿Deseas restablecer las configuraciones iniciales?')) {
+        STATE = structuredClone(DEFAULT_STATE);
+        saveState();
+        renderApp();
+        showToast('Valores restablecidos');
+      }
+    };
+  }
+}
+
+// Aplicar tema guardado previamente
+let savedTheme; try { savedTheme = localStorage.getItem('theme_pref'); } catch {};
+if (savedTheme) {
+  document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
+/* NutriPlan · flujo profesional y familiar */
+const BASE_RECIPE_COUNT=R.length;
+const NEW_DEFAULTS={pantry:{},prices:{},favorites:[],customRecipes:[],targets:{kcal:0,water:0},maxTime:0,maxCost:0,dayIndex:0,reviewed:false,reviewedAt:'',followup:'',history:[],restrictions:'',patientNotes:'',portionFactor:1};
+Object.assign(DEFAULT_STATE,structuredClone(NEW_DEFAULTS));
+DEFAULT_STATE.patient={name:'Paciente de ejemplo',age:35,weight:70,height:170,gender:'m',goal:'general'};
+DEFAULT_STATE.clinician={name:'Profesional por registrar',license:'',specialty:'Nutrición / Medicina',clinic:'Mi consultorio',phone:'',notes:''};
+DEFAULT_STATE.activeTips=[];
+try { if(!localStorage.getItem('nutriplan_v2')) STATE=structuredClone(DEFAULT_STATE); } catch { STATE=structuredClone(DEFAULT_STATE); }
+function normalizeState(){
+  for(const k in NEW_DEFAULTS) if(STATE[k]===undefined) STATE[k]=structuredClone(NEW_DEFAULTS[k]);
+  STATE.patient={...DEFAULT_STATE.patient,...STATE.patient};STATE.clinician={...DEFAULT_STATE.clinician,...STATE.clinician};
+  STATE.targets={...NEW_DEFAULTS.targets,...STATE.targets};
+  if(!CLINICAL_GOALS[STATE.patient.goal]) STATE.patient.goal='general';
+  R.splice(BASE_RECIPE_COUNT);STATE.customRecipes.forEach(r=>R.push({...r,id:R.length}));
+}
+normalizeState();
+// Las recetas de ejemplo no constituyen recomendaciones para una enfermedad.
+R.slice(0,BASE_RECIPE_COUNT).forEach(r=>{r.clin=[];r.nutriTip='Revisa ingredientes, cantidades y preparación con tu profesional. Los nutrientes son estimaciones por porción de referencia.';r.saveTip='Compara el precio por unidad y aprovecha los ingredientes que ya tienes antes de comprar.';});
+Object.values(CLINICAL_GOALS).forEach(g=>{g.desc='Objetivo registrado por el profesional; no selecciona ni valida tratamientos automáticamente.';});
+CLINICAL_GOALS.general.name='Alimentación y organización semanal';
+const basicTips=[
+ ['cooking','Variar las preparaciones: horno, comal, vapor y guisados según el plan acordado.'],
+ ['veggies','Incluir variedad de verduras, frutas, leguminosas y cereales según las porciones indicadas.'],
+ ['salt','Revisar etiquetas y ajustar sal, salsas y productos empacados a las indicaciones individuales.'],
+ ['whole_fruit','Preferir fruta entera cuando sea compatible con las necesidades del paciente.'],
+ ['planning','Planear compras, revisar la despensa y preparar ingredientes con anticipación.'],
+ ['water','Seguir la cantidad de líquidos indicada por el profesional.']
+];
+CLINICAL_TIPS_PRESETS.splice(0,CLINICAL_TIPS_PRESETS.length,...basicTips.map(([id,text])=>({id,text})));
+SLOT_NAMES.ss='Colación salada';SLOT_NAMES.sd='Colación dulce';SLOT_NAMES.sm='Colación matutina';SLOT_NAMES.st='Colación vespertina';
+function effectivePrice(k){return Number.isFinite(+STATE.prices[k])&&+STATE.prices[k]>=0?+STATE.prices[k]:I[k][4];}
+unitCost=function(r){return Object.entries(r.i).reduce((s,[k,q])=>s+(I[k]?q*effectivePrice(k)/I[k][3]:0),0);};
+calcTargetCalories=function(){return +STATE.targets.kcal||0;};
+calcWaterLiters=function(){return +STATE.targets.water||0;};
+const oldAllowed=isRecipeAllowed;
+isRecipeAllowed=function(r,s){return oldAllowed(r,s)&&(!STATE.maxTime||parseInt(r.time)<=STATE.maxTime)&&(!STATE.maxCost||unitCost(r)<=STATE.maxCost);};
+calculateGroceries=function(plan){
+ const need={};for(const day of plan||[])for(const id of Object.values(day)){if(id==null||!R[id])continue;for(const [k,q]of Object.entries(R[id].i))need[k]=(need[k]||0)+q*servings();}
+ let total=0,consumed=0,withoutPantry=0;const items=[];
+ for(const[k,qty]of Object.entries(need)){
+  if(!I[k])continue;const[name,aisle,unit,packQty,,,step]=I[k],price=effectivePrice(k),have=Math.max(0,+STATE.pantry[k]||0),missing=Math.max(0,qty-have);
+  const rounding=step||packQty,buy=Math.ceil(Math.max(0,missing-1e-9)/rounding)*rounding,full=Math.ceil((qty-1e-9)/rounding)*rounding,cost=buy/packQty*price;
+  const label=buy===0?'Ya está en tu despensa':step?formatQty(buy,unit):`${buy/packQty} ${packQty===1?'pz':'paq'}${packQty===1?'':` (${formatQty(packQty,unit)})`}`;
+  total+=cost;consumed+=qty/packQty*price;withoutPantry+=full/packQty*price;
+  items.push({key:k,name,aisle,label,cost,need:qty,unit,buy,have,missing,leftover:Math.max(0,have+buy-qty)});
+ }
+ return{items,total,consumed,withoutPantry,saved:withoutPantry-total};
+};
+// Variedad sin sustituir por una misma receta durante el ajuste económico.
+buildWeeklyPlan=function(){
+ const rand=rng(STATE.seed),slots=activeSlots(),used={},plan=[];
+ for(let d=0;d<7;d++){
+  const day={};for(const slot of slots){
+   const pool=getCandidates(slot);if(!pool.length){day[slot]=null;continue;}
+   const target=STATE.budget/Math.max(1,servings())/(7*Math.max(1,slots.length));
+   const ranked=pool.map(r=>({r,score:rand()*2-(used[r.id]||0)*5-(Object.values(day).includes(r.id)?8:0)-(d&&plan[d-1][slot]===r.id?5:0)-Math.max(0,unitCost(r)-target)/15+(STATE.favorites.includes(r.id)?1:0)})).sort((a,b)=>b.score-a.score);
+   day[slot]=ranked[0].r.id;used[day[slot]]=(used[day[slot]]||0)+1;
+  }plan.push(day);
+ }
+ // Buscar sustituciones solo si reducen la compra real, respetando la variedad.
+ for(let round=0;round<16;round++){
+  const total=calculateGroceries(plan).total;if(total<=STATE.budget)break;
+  let best=null,gain=0;for(let d=0;d<7;d++)for(const s of slots){const old=plan[d][s];if(old==null)continue;
+   const candidates=getCandidates(s).filter(r=>r.id!==old&&(used[r.id]||0)<2&&!Object.values(plan[d]).includes(r.id)).sort((a,b)=>unitCost(a)-unitCost(b)).slice(0,4);
+   for(const r of candidates){plan[d][s]=r.id;const diff=total-calculateGroceries(plan).total;if(diff>gain+0.01){gain=diff;best={d,s,old,id:r.id};}}plan[d][s]=old;
+  }if(!best)break;plan[best.d][best.s]=best.id;used[best.old]--;used[best.id]=(used[best.id]||0)+1;
+ }return plan;
+};
+function field(id,label,value,type='text',attrs=''){return `<label class="np-field" for="${id}"><span>${label}</span><input class="form-control" id="${id}" type="${type}" value="${esc(value)}" ${attrs}></label>`;}
+function textarea(id,label,value,rows=4){return `<label class="np-field" for="${id}"><span>${label}</span><textarea class="form-control" id="${id}" rows="${rows}">${esc(value)}</textarea></label>`;}
+function indicationContent(){return `<div class="np-note"><b>Indicaciones de tu profesional</b><p>${esc(STATE.clinician.notes||'Tu profesional puede agregar aquí las indicaciones de tu plan.').replace(/\n/g,'<br>')}</p>${STATE.activeTips.length?`<ul>${CLINICAL_TIPS_PRESETS.filter(t=>STATE.activeTips.includes(t.id)).map(t=>`<li>${esc(t.text)}</li>`).join('')}</ul>`:''}</div>`;}
+renderClinicalView=function(){
+ if(STATE.mode!=='clinician')return `<div class="card-panel"><div class="panel-title">Tu acompañamiento</div>${indicationContent()}<p class="np-muted">Próximo seguimiento: ${esc(STATE.followup||'Por acordar')} · ${esc(STATE.clinician.name)}</p>${STATE.targets.kcal?`<p>Meta de energía registrada: ${STATE.targets.kcal} kcal/día.</p>`:''}${STATE.targets.water?`<p>Líquidos indicados: ${STATE.targets.water} L/día.</p>`:''}</div>`;
+ return `<form id="np-clinical-form" class="clinical-grid"><div><div class="card-panel"><div class="np-eyebrow">01 / Perfil</div><h2 class="panel-title">Conoce a tu paciente</h2><div class="form-grid-2">${field('p-name','Nombre o identificador',STATE.patient.name,'text','required maxlength="120"')}${field('p-age','Edad · años',STATE.patient.age,'number','required min="1" max="120"')}${field('p-weight','Peso · kg',STATE.patient.weight,'number','required min="1" max="500" step="0.1"')}${field('p-height','Estatura · cm',STATE.patient.height,'number','required min="30" max="250" step="0.1"')}</div><label class="np-field"><span>Objetivo de acompañamiento</span><select class="form-control" id="p-goal">${Object.entries(CLINICAL_GOALS).map(([k,g])=>`<option value="${k}" ${STATE.patient.goal===k?'selected':''}>${esc(g.name)}</option>`).join('')}</select></label>${textarea('np-restrictions','Alergias, restricciones y observaciones clínicas',STATE.restrictions)}<p class="np-muted">Las notas no excluyen ingredientes automáticamente. Registra las exclusiones en Ajustes y revisa etiquetas y contaminación cruzada.</p></div><div class="card-panel"><div class="np-eyebrow">02 / Profesional</div><h2 class="panel-title">Tu consultorio</h2><div class="form-grid-2">${field('c-name','Nombre del profesional',STATE.clinician.name,'text','required')}${field('c-license','Cédula profesional',STATE.clinician.license)}${field('c-clinic','Consultorio',STATE.clinician.clinic)}${field('c-phone','Contacto',STATE.clinician.phone)}${field('np-specialty','Especialidad',STATE.clinician.specialty)}${field('np-followup','Próxima consulta',STATE.followup,'date')}</div></div></div><div><div class="card-panel"><div class="np-eyebrow">03 / Personalización</div><h2 class="panel-title">Objetivos e indicaciones</h2><p class="np-muted">Captura las metas definidas en consulta. El generador organiza recetas y costo; no garantiza cumplir una prescripción ni valida dietas terapéuticas.</p><div class="form-grid-2">${field('np-kcal','Meta de energía · kcal/día (opcional)',STATE.targets.kcal||'','number','min="0" max="10000" step="1"')}${field('np-water','Líquidos · L/día (opcional)',STATE.targets.water||'','number','min="0" max="20" step="0.1"')}</div><div class="np-muted">Recomendaciones básicas · selecciona las que correspondan</div><div class="checklist-wrap">${CLINICAL_TIPS_PRESETS.map(t=>`<label class="checklist-item"><input type="checkbox" data-tip-id="${t.id}" ${STATE.activeTips.includes(t.id)?'checked':''}><span>${esc(t.text)}</span></label>`).join('')}</div>${textarea('c-notes','Indicaciones personalizadas para el paciente',STATE.clinician.notes,5)}<button type="submit" class="btn btn-primary np-full">Guardar ficha e indicaciones</button></div><div class="card-panel"><h2 class="panel-title">Revisión del menú</h2><p class="np-muted">Revisa porciones, ingredientes, valores estimados y disponibilidad antes de entregar. Cualquier cambio en el menú requiere una nueva revisión.</p><button type="button" class="btn ${STATE.reviewed?'':'btn-primary'} np-full" id="np-review">${STATE.reviewed?'Revisión registrada · '+esc(STATE.reviewedAt):'Registrar que revisé este menú'}</button><p class="np-muted">Este registro es una marca local de revisión, sin firma electrónica.</p></div></div></form>`;
+};
+function renderToday(){
+ const idx=STATE.dayIndex,day=STATE.plan[idx]||{},unique=new Set(STATE.plan.flatMap(d=>Object.values(d)).filter(x=>x!=null)).size;
+ return `<section class="np-hero"><div><div class="np-eyebrow">TU SEMANA, CON INTENCIÓN</div><h1>Comer bien empieza<br>con un buen plan.</h1><p>Más ideas para tu mesa. Compras claras.<br>Un presupuesto que puedes seguir.</p><div class="np-hero-pills"><span>${unique} platillos distintos</span><span>${peopleCount()} comensales</span><span>Precios editables · MXN</span></div></div><div class="np-plate" aria-hidden="true"><div class="np-plate-food"><span>🥦</span><span>🥑</span><span>🍅</span><span>🍚</span></div><div class="np-plate-label">Planea · Cocina · Disfruta</div></div></section><section class="card-panel np-today"><div class="np-section-head"><div><div class="np-eyebrow">PASO A PASO</div><h2 class="panel-title">¿Qué comemos hoy?</h2></div><select class="form-control" style="width:auto" id="np-day" aria-label="Día del menú">${DAYS.map((d,i)=>`<option value="${i}" ${i===idx?'selected':''}>${d}</option>`).join('')}</select></div><div class="np-today-grid">${activeSlots().map(s=>{const r=R[day[s]];return `<article><span class="np-eyebrow">${SLOT_NAMES[s]}</span>${r?`<button class="meal-title-btn" data-open-rec="${r.id}">${esc(r.n)}</button><p class="np-muted">${esc(r.time)} · ${money(unitCost(r))} / porción</p><button class="btn btn-sm" data-swap-slot="${idx}|${s}">Cambiar platillo</button>`:`<p>Sin receta compatible. Ajusta tus filtros.</p>`}</article>`;}).join('')}</div></section>`;
+}
+const originalMenu=renderMenuView;
+renderMenuView=function(plan,slots){return renderToday()+`<div class="np-section-head"><h2 class="np-heading">Tu menú de la semana</h2><span class="np-muted">Toca un platillo para ver su preparación</span></div>`+originalMenu(plan,slots)+indicationContent();};
+renderBudgetView=function(total,items){
+ const g=calculateGroceries(STATE.plan),balance=STATE.budget-total;
+ return `<div class="clinical-grid"><div><form id="np-budget-form" class="card-panel"><div class="np-eyebrow">COMPRAR CON CLARIDAD</div><h2 class="panel-title">Cada peso cuenta</h2><div class="np-budget-amount ${balance<0?'danger':''}">${money(total)} <small>MXN estimados</small></div><p class="np-muted">${balance<0?'Excede tu presupuesto por '+money(-balance):'Disponible: '+money(balance)}. El costo corresponde a paquetes y cantidades de compra.</p>${field('np-budget','Tu presupuesto semanal · MXN',STATE.budget,'number','required min="1" max="1000000" step="0.01"')}<div class="btn-group"><button class="btn btn-primary" type="submit">Guardar presupuesto</button><button class="btn" type="button" id="np-economize">Buscar menú económico</button></div><p class="np-muted">Guardar el monto conserva tus platillos. Buscar un menú genera otra propuesta; el presupuesto puede no ser suficiente para todos los tiempos.</p></form><div class="card-panel"><h2 class="panel-title">Así se distribuye tu compra</h2>${Object.entries(AISLES).map(([k,a])=>{const sum=items.filter(i=>i.aisle===k).reduce((s,i)=>s+i.cost,0);return sum?`<div class="np-spend-row"><span>${a.icon} ${a.name}</span><b>${money(sum)}</b></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${total?sum/total*100:0}%"></div></div>`:'';}).join('')}</div></div><div><div class="card-panel"><h2 class="panel-title">Aprovecha lo que tienes</h2><div class="np-stat"><span>Compra evitada con tu despensa</span><b>${money(g.saved)}</b></div><div class="np-stat"><span>Valor de ingredientes del menú</span><b>${money(g.consumed)}</b></div><p class="np-muted">El valor consumido y el gasto de compra son distintos: comprar un paquete puede dejar sobrantes.</p><button class="btn np-full" type="button" data-tab="list">Revisar despensa y precios</button></div><div class="card-panel"><h2 class="panel-title">Pequeñas decisiones, menos desperdicio</h2><ol class="np-guide"><li>Revisa el refrigerador antes de comprar.</li><li>Actualiza los precios del comercio que utilizas.</li><li>Busca recetas con ingredientes que compartirás durante la semana.</li><li>Guarda los sobrantes de compra para planear la siguiente semana.</li></ol></div></div></div>`;
+};
+const originalShopping=renderShoppingView;
+renderShoppingView=function(items){
+ const pending=items.filter(i=>i.buy>0),g=calculateGroceries(STATE.plan);
+ return `<div class="card-panel"><div class="np-section-head"><div><div class="np-eyebrow">ANTES DE SALIR</div><h2 class="panel-title">Tu despensa también cuenta</h2><p class="np-muted">Captura existencias y precios por paquete; la lista descontará lo que tienes. Las casillas del carrito solo indican progreso.</p></div><b class="np-saving">${money(g.saved)} en compra evitada</b></div><details><summary>Editar despensa y precios (${Object.keys(I).length} ingredientes)</summary><form id="np-pantry-form"><div class="np-table-wrap"><table class="np-table"><thead><tr><th>Ingrediente</th><th>En casa</th><th>Precio MXN / paquete</th></tr></thead><tbody>${Object.entries(I).map(([k,i])=>`<tr><td>${esc(i[0])}<small>Paquete: ${formatQty(i[3],i[2])}</small></td><td><label class="np-inline"><input class="form-control" type="number" min="0" max="1000000" step="0.1" data-pantry="${k}" value="${+STATE.pantry[k]||0}" aria-label="Existencias de ${esc(i[0])}"><span>${i[2]}</span></label></td><td><input class="form-control" type="number" min="0" max="1000000" step="0.01" data-price="${k}" value="${effectivePrice(k)}" aria-label="Precio de ${esc(i[0])}"></td></tr>`).join('')}</tbody></table></div><button type="submit" class="btn btn-primary">Actualizar lista y costos</button></form></details></div>${pending.length?originalShopping(pending):'<div class="card-panel"><h2 class="panel-title">Tu despensa cubre este menú</h2><p>No hay productos pendientes de compra.</p></div>'}<details class="card-panel"><summary>Sobrantes estimados después de preparar el menú</summary><div class="np-spend-row np-muted">No se descuentan automáticamente de tu inventario.</div>${items.filter(i=>i.leftover>0).map(i=>`<div class="np-spend-row"><span>${esc(i.name)}</span><b>${formatQty(i.leftover,i.unit)}</b></div>`).join('')||'<p>Sin sobrantes estimados.</p>'}</details>`;
+};
+renderRecipeCardList=function(list){if(!list.length)return '<p class="np-muted">No hay recetas con esos filtros. Prueba ampliar el tiempo o el costo.</p>';return list.map(r=>`<article class="recipe-card-single"><div class="np-recipe-art" aria-hidden="true">${recipeEmoji(r)}<span>${esc(r.time)}</span></div><div class="recipe-card-body"><div class="recipe-tags">${r.s.map(s=>`<span class="tag-badge">${SLOT_NAMES[s]||s}</span>`).join('')}${r.id>=BASE_RECIPE_COUNT?'<span class="tag-badge">Del consultorio</span>':''}</div><div class="recipe-card-title">${esc(r.n)}</div><p class="np-muted">≈ ${r.kc} kcal · ${r.pr} g proteína / porción</p><div class="np-section-head"><b class="np-price">${money(unitCost(r))}<small> / porción</small></b><button class="btn btn-sm" data-favorite="${r.id}" aria-label="${STATE.favorites.includes(r.id)?'Quitar de':'Agregar a'} favoritos" aria-pressed="${STATE.favorites.includes(r.id)}">${STATE.favorites.includes(r.id)?'♥':'♡'}</button></div><button class="btn btn-primary np-full" data-open-rec="${r.id}">Ver receta</button>${STATE.mode==='clinician'?`<button class="btn btn-sm np-full" data-edit-rec="${r.id}">Personalizar receta</button>`:''}</div></article>`).join('');};
+function recipeEmoji(r){if(r.i.pollo)return '🥗';if(r.i.huevo)return '🍳';if(r.i.avena)return '🥣';if(r.i.tilapia||r.i.atun)return '🐟';if(r.i.molida||r.i.bistec)return '🥘';if(r.s.includes('sd'))return '🍓';return '🥙';}
+renderRecipesCatalogView=function(){return `<div class="card-panel"><div class="np-section-head"><div><div class="np-eyebrow">IDEAS PARA CAMBIAR</div><h2 class="panel-title">Tu recetario, más variado</h2><p class="np-muted">${R.length} recetas · costos por porción · valores nutricionales de referencia.</p></div>${STATE.mode==='clinician'?'<button class="btn btn-primary" id="np-new-recipe">+ Crear receta</button>':''}</div><div class="np-filters"><label class="np-field"><span>Buscar platillo o ingrediente</span><input class="form-control" id="np-search" type="search" placeholder="Pollo, avena, calabacita…"></label><label class="np-field"><span>Tiempo de comida</span><select class="form-control" id="np-slot"><option value="all">Todos</option>${['des','alm','cen','sd','ss'].map(k=>`<option value="${k}">${SLOT_NAMES[k]}</option>`).join('')}</select></label><label class="np-field"><span>Preparación</span><select class="form-control" id="np-time"><option value="0">Cualquier duración</option><option value="15">Hasta 15 minutos</option><option value="25">Hasta 25 minutos</option><option value="40">Hasta 40 minutos</option></select></label><label class="np-field"><span>Ordenar / favoritos</span><select class="form-control" id="np-sort"><option value="all">Todas las recetas</option><option value="cheap">Menor costo primero</option><option value="favorites">Mis favoritos</option></select></label></div><label class="np-muted np-inline"><input type="checkbox" id="np-compatible" checked> Mostrar solo recetas compatibles con mis preferencias y exclusiones</label><div class="recipe-cards-grid" id="recipe-cards-container">${renderRecipeCardList(R.filter(r=>isRecipeAllowed(r,r.s[0])))}</div></div>`;};
+const originalModal=openRecipeModal;
+openRecipeModal=function(id){originalModal(id);const box=$('.modal-box');if(!box)return;box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label',R[id].n);box.insertAdjacentHTML('afterbegin',`<div class="np-modal-cost">${money(unitCost(R[id]))} / porción · ${money(unitCost(R[id])*servings())} para ${servings()} porciones <small>Costo de ingredientes; puede diferir del gasto por paquetes.</small></div>`);box.insertAdjacentHTML('beforeend','<p class="np-muted">Las cantidades de preparación describen una porción de referencia; multiplica todos los ingredientes al cocinar para varias personas. Valores nutricionales estimados, sin validación de laboratorio.</p>');$('#modal-close').focus();};
+function showRecipeEditor(sourceId){
+ const r=sourceId==null?{n:'',s:['alm'],i:{},time:'20 min',p:'',kc:0,pr:0,ch:0,gr:0,fib:0,nutriTip:'',saveTip:''}:R[sourceId];
+ $('#modal-root').innerHTML=`<div class="modal-overlay"><form class="modal-box" id="np-recipe-form" role="dialog" aria-modal="true" aria-label="Editor de recetas"><div class="modal-header"><h2 class="modal-title">${sourceId==null?'Nueva receta':'Personaliza esta receta'}</h2><button type="button" class="close-btn" id="np-close-editor" aria-label="Cerrar">×</button></div><p class="np-muted">Se guarda como receta del consultorio. Ingredientes en cantidades para una porción, usando el estado de compra del catálogo (seco/crudo salvo indicación). Verifica el rendimiento al cocinar.</p>${field('np-r-name','Nombre del platillo',r.n,'text','required maxlength="160"')}<div class="form-grid-2"><label class="np-field"><span>Tiempo de comida</span><select class="form-control" id="np-r-slot">${['des','alm','cen','sd','ss'].map(s=>`<option value="${s}" ${r.s[0]===s?'selected':''}>${SLOT_NAMES[s]}</option>`).join('')}</select></label>${field('np-r-time','Preparación · minutos',parseInt(r.time)||20,'number','required min="1" max="600"')}</div><details open><summary>Ingredientes y cantidades por porción</summary><div class="np-ingredient-editor">${Object.entries(I).map(([k,i])=>`<label class="np-ingredient"><span>${esc(i[0])} <small>(${i[2]})</small></span><input class="form-control" type="number" min="0" max="10000" step="0.01" data-ri="${k}" value="${r.i[k]||''}" aria-label="Cantidad de ${esc(i[0])}"></label>`).join('')}</div></details><div class="form-grid-2">${[['kc','Energía · kcal'],['pr','Proteína · g'],['ch','Carbohidratos · g'],['gr','Grasa · g'],['fib','Fibra · g']].map(([k,l])=>field('np-r-'+k,l,r[k],'number','required min="0" max="10000" step="0.1"')).join('')}</div>${textarea('np-r-prep','Preparación',r.p)}${textarea('np-r-tip','Recomendación del profesional',sourceId!=null&&sourceId<BASE_RECIPE_COUNT?'':r.nutriTip,2)}${textarea('np-r-save','Consejo de aprovechamiento',r.saveTip,2)}<p class="np-muted" id="np-recipe-error" role="alert"></p><button type="submit" class="btn btn-primary np-full">Guardar en mi recetario</button></form></div>`;
+ $('#np-close-editor').onclick=()=>$('#modal-root').innerHTML='';
+ $('#np-recipe-form').onsubmit=e=>{e.preventDefault();const ingredients={};$('[data-ri]').forEach(x=>{if(+x.value>0)ingredients[x.dataset.ri]=+x.value;});if(!Object.keys(ingredients).length||!$('#np-r-prep').value.trim()){ $('#np-recipe-error').textContent='Agrega al menos un ingrediente y la preparación.';return;}
+ const rec={n:$('#np-r-name').value.trim(),s:[$('#np-r-slot').value],i:ingredients,time:$('#np-r-time').value+' min',p:$('#np-r-prep').value.trim(),st:[],clin:[],nutriTip:$('#np-r-tip').value,saveTip:$('#np-r-save').value};for(const k of ['kc','pr','ch','gr','fib'])rec[k]=+$('#np-r-'+k).value;
+ if(sourceId>=BASE_RECIPE_COUNT){STATE.customRecipes[sourceId-BASE_RECIPE_COUNT]=rec;}else STATE.customRecipes.push(rec);
+ STATE.reviewed=false;normalizeState();saveState();$('#modal-root').innerHTML='';renderApp();showToast('Receta guardada en tu recetario');};$('#np-r-name').focus();
+}
+const originalConfig=renderConfigView;
+renderConfigView=function(){return `<div class="card-panel np-data-panel"><h2 class="panel-title">Tu archivo de trabajo</h2><p class="np-muted">Los datos se guardan en este navegador. Puedes descargar un respaldo para continuar en otro equipo. Incluye los datos que captures; compártelo solo con quien corresponda. Los modos cambian la vista, no son cuentas con permisos.</p><div class="btn-group"><button class="btn" id="np-export">Descargar respaldo JSON</button><label class="btn" for="np-import">Cargar respaldo<input hidden id="np-import" type="file" accept=".json,application/json"></label></div><p class="np-muted" id="np-import-message" role="status"></p></div>`+originalConfig()+`<form id="np-limits-form" class="card-panel" style="max-width:760px;margin:18px auto"><h2 class="panel-title">Haz que el menú se adapte a tu rutina</h2><div class="form-grid-2">${field('np-max-time','Máximo de minutos por receta · 0 sin límite',STATE.maxTime,'number','required min="0" max="600"')}${field('np-max-cost','Máximo MXN por porción · 0 sin límite',STATE.maxCost,'number','required min="0" max="10000" step="0.01"')}</div><p class="np-muted">Si las exclusiones o límites no dejan recetas disponibles, el tiempo quedará vacío. Las porciones infantiles del ajuste familiar son solo una estimación de compra y requieren individualización profesional.</p><button class="btn btn-primary" type="submit">Aplicar y proponer menú</button></form>`;};
+function exportBackup(){const blob=new Blob([JSON.stringify({app:'NutriPlan',version:3,state:STATE},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='NutriPlan_respaldo.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function validateBackup(data){
+ if(data?.app!=='NutriPlan'||data.version!==3||!data.state||typeof data.state!=='object')throw Error('Este archivo no es un respaldo NutriPlan compatible.');
+ const s=data.state;if(!s.patient||!s.clinician||!Array.isArray(s.customRecipes)||!Array.isArray(s.excl)||!s.meals||!s.snack||!s.targets)throw Error('El respaldo está incompleto.');
+ const finite=(v,min,max)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;
+ if(!finite(s.budget,1,1e6)||!finite(s.adults,1,10)||!finite(s.kids,0,8)||!finite(s.patient.age,1,120)||!finite(s.patient.weight,1,500)||!finite(s.patient.height,30,250)||!['patient','clinician'].includes(s.mode)||!['menu','list','budget','recipes','clinical','config'].includes(s.tab)||!['none','veg','vegan','pesc'].includes(s.diet))throw Error('Revisa los valores de perfil o presupuesto.');
+ if(!finite(s.targets.kcal,0,10000)||!finite(s.targets.water,0,20))throw Error('Metas fuera de rango.');
+ for(const r of s.customRecipes){if(!r||typeof r.n!=='string'||typeof r.p!=='string'||!Array.isArray(r.s)||!r.s.length||!r.s.every(x=>['des','alm','cen','sd','ss'].includes(x))||typeof r.time!=='string'||!r.i||!Object.keys(r.i).length||Object.entries(r.i).some(([k,v])=>!I[k]||!finite(v,0,10000))||['kc','pr','ch','gr','fib'].some(k=>!finite(r[k],0,10000)))throw Error('Una receta contiene datos inválidos.');}
+ if(!Array.isArray(s.favorites)||!Array.isArray(s.activeTips)||s.excl.some(k=>!I[k]))throw Error('Preferencias inválidas.');
+ for(const m of ['pantry','prices'])if(!s[m]||Object.entries(s[m]).some(([k,v])=>!I[k]||!finite(v,0,1e6)))throw Error('Despensa o precios inválidos.');
+ const max=BASE_RECIPE_COUNT+s.customRecipes.length;if(s.plan&&(!Array.isArray(s.plan)||s.plan.length!==7||s.plan.some(d=>!d||typeof d!=='object'||Object.entries(d).some(([k,v])=>!['des','alm','cen','sm','st'].includes(k)||(v!==null&&(!Number.isInteger(v)||v<0||v>=max))))))throw Error('Menú inválido.');
+ return s;
+}
+const originalBind=bindEventListeners;
+bindEventListeners=function(items){
+ originalBind(items);
+ const rerender=()=>{saveState();renderApp();};
+ if($('#btn-mode-patient'))$('#btn-mode-patient').onclick=()=>{STATE.mode='patient';STATE.tab='menu';rerender();};
+ if($('#np-day'))$('#np-day').onchange=e=>{STATE.dayIndex=+e.target.value;rerender();};
+ if($('#np-budget-form'))$('#np-budget-form').onsubmit=e=>{e.preventDefault();STATE.budget=+$('#np-budget').value;rerender();showToast('Presupuesto guardado; menú conservado');};
+ if($('#np-economize'))$('#np-economize').onclick=()=>{STATE.budget=+$('#np-budget').value||STATE.budget;STATE.seed++;STATE.plan=buildWeeklyPlan();STATE.reviewed=false;rerender();};
+ if($('#np-pantry-form'))$('#np-pantry-form').onsubmit=e=>{e.preventDefault();$('[data-pantry]').forEach(x=>STATE.pantry[x.dataset.pantry]=+x.value);$('[data-price]').forEach(x=>STATE.prices[x.dataset.price]=+x.value);STATE.got={};rerender();showToast('Lista recalculada con tu despensa');};
+ if($('#np-clinical-form'))$('#np-clinical-form').onsubmit=e=>{e.preventDefault();STATE.patient={...STATE.patient,name:$('#p-name').value,age:+$('#p-age').value,weight:+$('#p-weight').value,height:+$('#p-height').value,goal:$('#p-goal').value};for(const[k,id]of Object.entries({name:'c-name',license:'c-license',clinic:'c-clinic',phone:'c-phone',notes:'c-notes',specialty:'np-specialty'}))STATE.clinician[k]=$('#'+id).value;STATE.targets={kcal:+$('#np-kcal').value||0,water:+$('#np-water').value||0};STATE.restrictions=$('#np-restrictions').value;STATE.followup=$('#np-followup').value;STATE.activeTips=Array.from($('[data-tip-id]:checked')).map(x=>x.dataset.tipId);STATE.reviewed=false;rerender();showToast('Ficha guardada; menú conservado');};
+ if($('#np-review'))$('#np-review').onclick=()=>{STATE.reviewed=true;STATE.reviewedAt=new Date().toLocaleDateString('es-MX');rerender();};
+ if($('#np-limits-form'))$('#np-limits-form').onsubmit=e=>{e.preventDefault();STATE.maxTime=+$('#np-max-time').value;STATE.maxCost=+$('#np-max-cost').value;STATE.plan=buildWeeklyPlan();STATE.reviewed=false;rerender();};
+ if($('#np-new-recipe'))$('#np-new-recipe').onclick=()=>showRecipeEditor(null);
+ const bindCards=()=>{$('[data-open-rec]').forEach(b=>b.onclick=()=>openRecipeModal(+b.dataset.openRec));$('[data-edit-rec]').forEach(b=>b.onclick=()=>showRecipeEditor(+b.dataset.editRec));$('[data-favorite]').forEach(b=>b.onclick=()=>{const id=+b.dataset.favorite;STATE.favorites=STATE.favorites.includes(id)?STATE.favorites.filter(x=>x!==id):[...STATE.favorites,id];saveState();if($('#np-search'))filterRecipes();});};
+ function filterRecipes(){const query=$('#np-search').value.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g,''),slot=$('#np-slot').value,time=+$('#np-time').value,sort=$('#np-sort').value;let list=R.filter(r=>{const name=(r.n+' '+Object.keys(r.i).map(k=>I[k]?.[0]||'').join(' ')).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g,'');return name.includes(query)&&(slot==='all'||r.s.includes(slot))&&(!time||parseInt(r.time)<=time)&&(sort!=='favorites'||STATE.favorites.includes(r.id))&&(!$('#np-compatible').checked||isRecipeAllowed(r,slot==='all'?r.s[0]:slot));});if(sort==='cheap')list.sort((a,b)=>unitCost(a)-unitCost(b));$('#recipe-cards-container').innerHTML=renderRecipeCardList(list);bindCards();}
+ if($('#np-search')){for(const id of ['np-search','np-slot','np-time','np-sort','np-compatible'])$('#'+id)[id==='np-search'?'oninput':'onchange']=filterRecipes;}bindCards();
+ if($('#np-export'))$('#np-export').onclick=exportBackup;
+ if($('#np-import'))$('#np-import').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>3e6)throw Error('El respaldo supera el tamaño permitido.');const next=validateBackup(JSON.parse(await file.text()));if(!confirm('¿Cargar el respaldo y reemplazar los datos de este navegador?'))return;STATE=structuredClone(next);normalizeState();rerender();showToast('Respaldo cargado');}catch(err){$('#np-import-message').textContent=err.message;}};
+ if($('#btn-print-plan'))$('#btn-print-plan').onclick=()=>{document.body.classList.add('np-printing');$('#np-print-content')?.remove();const g=calculateGroceries(STATE.plan);const p=document.createElement('section');p.id='np-print-content';p.innerHTML=`<h1>${esc(STATE.clinician.clinic)}</h1><p>${esc(STATE.clinician.name)} · ${esc(STATE.clinician.specialty)} · Cédula: ${esc(STATE.clinician.license||'Sin registrar')}</p><p>Paciente: ${esc(STATE.patient.name)} · ${new Date().toLocaleDateString('es-MX')} · ${STATE.reviewed?'Revisión registrada '+esc(STATE.reviewedAt):'Borrador pendiente de revisión'}</p><h2>Menú semanal</h2><p>Referencias para 1 porción individual. Compra calculada para ${servings()} porciones familiares por platillo.</p>${originalMenu(STATE.plan,activeSlots())}${indicationContent()}<p>${STATE.targets.kcal?'Energía indicada: '+STATE.targets.kcal+' kcal/día. ':''}${STATE.targets.water?'Líquidos indicados: '+STATE.targets.water+' L/día.':''}</p><h2>Lista de compras · ${money(g.total)} MXN</h2><ul>${g.items.filter(i=>i.buy>0).map(i=>`<li>${esc(i.name)}: ${i.label} — ${money(i.cost)}</li>`).join('')}</ul><p>Presupuesto: ${money(STATE.budget)}. Precios de ejemplo editables; nutrientes estimados. Próxima consulta: ${esc(STATE.followup||'Por acordar')}.</p>`;document.body.appendChild(p);window.print();document.body.classList.remove('np-printing');};
+ // Registrar cambios reales del menú para invalidar la marca de revisión.
+ $('[data-check-item]').forEach(cb=>{cb.onchange=()=>{STATE.got[cb.dataset.checkItem]=cb.checked;rerender();};});
+ if($('#btn-copy-list'))$('#btn-copy-list').onclick=async()=>{const g=calculateGroceries(STATE.plan);const txt='LISTA DE COMPRAS · '+money(g.total)+' MXN\n'+g.items.filter(i=>i.buy>0).map(i=>`- ${i.name}: ${i.label} (${money(i.cost)})`).join('\n');try{await navigator.clipboard.writeText(txt);showToast('Lista copiada');}catch{showTextCopy(txt);}};
+ if($('#btn-share-whatsapp'))$('#btn-share-whatsapp').onclick=()=>{const txt='MENÚ SEMANAL\n'+STATE.plan.map((d,i)=>DAYS[i]+'\n'+activeSlots().map(s=>SLOT_NAMES[s]+': '+(R[d[s]]?.n||'Sin receta')).join('\n')).join('\n\n')+'\n\n'+STATE.clinician.notes;showTextCopy(txt);};
+};
+function showTextCopy(txt){$('#modal-root').innerHTML=`<div class="modal-overlay"><div class="modal-box" role="dialog" aria-modal="true" aria-label="Texto para compartir"><div class="modal-header"><h2 class="modal-title">Copia y comparte tu plan</h2><button class="close-btn" id="np-close-copy" aria-label="Cerrar">×</button></div><p class="np-muted">Revisa el contenido antes de pegarlo en tu aplicación de mensajes.</p><textarea class="form-control" id="np-copy-text" rows="14">${esc(txt)}</textarea></div></div>`;$('#np-close-copy').onclick=()=>$('#modal-root').innerHTML='';$('#np-copy-text').select();}
+const originalRender=renderApp;
+function menuFingerprint(){return JSON.stringify([STATE.plan,STATE.adults,STATE.kids,STATE.hasKids,STATE.customRecipes,STATE.excl,STATE.diet,STATE.lowcarb]);}
+let lastMenuSnapshot=menuFingerprint();
+renderApp=function(){
+ normalizeState();if(STATE.plan&&lastMenuSnapshot!==menuFingerprint())STATE.reviewed=false;
+ originalRender();lastMenuSnapshot=menuFingerprint();
+ const app=$('#app');app.dataset.mode=STATE.mode;
+ const logo=$('.brand-icon');if(logo)logo.innerHTML='<svg width="27" height="27" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M24 6C12 5 5 10 8 20c10 4 18-2 16-14Z" stroke="currentColor" stroke-width="2"/><path d="M7 26 21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+ $('.brand-title').textContent='nutriplan';$('.brand-subtitle').textContent='Nutrición que cabe en tu vida';
+ const nav=$('.nav-tabs');const status=document.createElement('div');status.className='np-workspace-bar';status.innerHTML=`<span>${STATE.mode==='clinician'?'ESPACIO PROFESIONAL':'MI PLAN DE ALIMENTACIÓN'}</span><span class="np-status ${STATE.reviewed?'is-reviewed':''}">${STATE.reviewed?'Revisión profesional registrada':'Propuesta pendiente de revisión'}</span>`;nav.before(status);
+ const g=calculateGroceries(STATE.plan),empty=STATE.plan.reduce((n,d)=>n+activeSlots().filter(s=>d[s]==null).length,0);
+ if(empty){const warn=document.createElement('div');warn.className='np-warning';warn.textContent=`Hay ${empty} tiempos sin receta compatible. Revisa las exclusiones y los límites en Ajustes.`;$('.action-bar').after(warn);}
+ const cards=$('.kpi-card');if(cards[1]){cards[1].querySelector('.kpi-label').textContent='Compra evitada · despensa';cards[1].querySelector('.kpi-val').textContent=money(g.saved);cards[1].querySelector('.kpi-sub').textContent='Según las existencias registradas';}
+ if(cards[2])cards[2].querySelector('.kpi-sub').textContent=STATE.targets.kcal?'Meta registrada: '+STATE.targets.kcal+' kcal/día':'Sin meta de energía registrada';
+ if(cards[3])cards[3].querySelector('.kpi-sub').textContent='Nutrientes estimados / porción individual';
+ $('[data-tab="clinical"]').forEach(x=>{if(x.classList.contains('tab-btn'))x.innerHTML=STATE.mode==='clinician'?'Consulta e indicaciones':'Mis indicaciones';});
+ const print=$('#btn-share-whatsapp');if(print)print.innerHTML='Copiar plan para compartir';
+ const foot=$('footer');foot.innerHTML='<p>NutriPlan · Planificación de alimentos y compras. Precios de ejemplo editables en MXN; no son cotizaciones actuales. Nutrientes de referencia sin validación clínica. Los modos son vistas de un mismo archivo local.</p>';
+ const badge=$('.patient-badge-banner .info-pills');if(badge)badge.innerHTML=`<span><b>Paciente:</b> ${esc(STATE.patient.name)}</span><span class="pill-badge">${esc(CLINICAL_GOALS[STATE.patient.goal].name)}</span>`;
+ if(STATE.mode==='patient'){$('.patient-badge-banner').style.display='none';}
+ // Evitar significados visuales erróneos de métricas de calorías y costes.
+ $('.kpi-label').forEach(x=>{if(x.children.length>1)x.lastElementChild.textContent='';});
+ saveState();
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal-root').innerHTML='';if(e.key==='Tab'){const modal=$('.modal-box');if(!modal)return;const list=Array.from(modal.querySelectorAll('button,input,select,textarea,[tabindex="0"]')).filter(x=>!x.disabled);if(!list.length)return;const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+
+formatNeed=function(q,u){return u==='pz'?`${+q.toFixed(2)} pz`:formatQty(q,u);};
+if(!savedTheme)document.documentElement.setAttribute('data-theme','light');
+// Iniciar aplicación
+renderApp();
+</script>
+</body>
+</html>
